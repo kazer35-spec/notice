@@ -12,7 +12,9 @@
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        
         input, select { border: none !important; outline: none !important; }
+        input:focus { ring: 1px solid #10b981 !important; }
         
         @keyframes gradient-x {
             0% { background-position: 0% 50%; }
@@ -37,14 +39,14 @@
         </div>
 
         <div class="p-6 max-h-[75vh] overflow-y-auto space-y-4 custom-scrollbar">
-            <div class="space-y-3">
+            <div class="space-y-4">
                 <div>
-                    <label class="text-[10px] font-black text-gray-500 ml-1 mb-1 block">🔴 산행지 & 픽업</label>
+                    <label class="text-[10px] font-black text-gray-500 ml-1 mb-1.5 block">🔴 산행지 & 픽업</label>
                     <div class="flex items-center gap-2">
                         <input type="text" id="n_mt" placeholder="어디로 가나요?" 
                                class="w-[70%] bg-white/5 h-[40px] rounded-xl text-white text-sm px-4 focus:ring-1 ring-emerald-500/50 transition-all">
                         
-                        <div class="w-[30%] flex items-center p-1 bg-white/5 rounded-xl border border-white/5 h-[40px]">
+                        <div class="w-[30%] flex items-center p-0.5 bg-white/5 rounded-xl border border-white/5 h-[40px]">
                             <input type="radio" name="n_pickup" id="p_ok" value="(픽업 가능)" class="hidden peer/ok">
                             <label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-lg text-[10px] font-black text-gray-400 cursor-pointer hover:bg-white/5 peer-checked/ok:bg-blue-600 peer-checked/ok:text-white transition-all">픽업</label>
                             
@@ -95,7 +97,9 @@
 
                 <div>
                     <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스</label>
-                    <input type="text" id="n_course" placeholder='스페이스바 두번 누르면 " - " 생깁니다' class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
+                    <input type="text" id="n_course"
+                           placeholder='스페이스바 두번 누르면 " - " 생깁니다'
+                           class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -124,7 +128,8 @@
                 </div>
             </div>
 
-            <button onclick="makeNoticeText()" class="group relative w-full h-[50px] mt-4 rounded-xl overflow-hidden transition-all duration-300 active:scale-[0.98]">
+            <button onclick="makeNoticeText()" 
+                    class="group relative w-full h-[52px] mt-4 rounded-xl overflow-hidden transition-all duration-300 active:scale-[0.98]">
                 <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600 animate-gradient-x group-hover:scale-110 transition-transform duration-500"></div>
                 <div class="relative flex items-center justify-center gap-2">
                     <span class="text-white font-black text-base tracking-[0.1em] drop-shadow-md">일정 생성하기 ✨</span>
@@ -142,8 +147,11 @@
     </div>
 
     <script>
+        // 1. 일정 생성 로직
         window.makeNoticeText = () => {
             const mt = document.getElementById('n_mt').value || '미정';
+            
+            // 픽업 옵션 로직
             const pickupOption = document.querySelector('input[name="n_pickup"]:checked');
             const isPickupEnabled = pickupOption && pickupOption.id === 'p_ok';
             const pickupTag = pickupOption ? pickupOption.value : "";
@@ -156,11 +164,12 @@
             
             let timeStr = hour ? `${hour}시 ${min}분` : "";
             const dateStr = month ? `${month}월 ${day}일 ${ampm} ${timeStr}` : '추후 공지';
+            
             const meet = document.getElementById('n_meet').value || '추후 공지';
 
             const hourVal = document.getElementById('n_time_h').value;
             const minVal = document.getElementById('n_time_m').value;
-            let time = hourVal ? `약 ${hourVal}시간${minVal && minVal !== "0" ? ` ${minVal}분` : ""}` : "미정";
+            let time = hourVal ? `약 ${hourVal}시간${(minVal && minVal !== "0") ? ` ${minVal}분` : ""}` : "미정";
 
             const course = document.getElementById('n_course').value || '미정';
             const distVal = document.getElementById('n_dist').value;
@@ -168,6 +177,7 @@
             const lv = document.getElementById('n_lv').value;
             const etc = document.getElementById('n_etc').value;
 
+            // 픽업 여부에 따른 조건부 문구
             const pickupNotice = isPickupEnabled 
                 ? `\n💢일자, 시간, 장소 조율 가능합니다\n    차량 픽업 관련 문의 서브방에 입장해주세요` 
                 : "";
@@ -192,24 +202,31 @@
             document.getElementById('n_result_box').scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
 
+        // 2. 복사 로직
         window.copyNoticeContent = () => {
             const text = document.getElementById('n_final_text').innerText;
             const textArea = document.createElement("textarea");
             textArea.value = text;
             document.body.appendChild(textArea);
             textArea.select();
-            document.execCommand('copy');
+            try {
+                document.execCommand('copy');
+                alert("공지가 클립보드에 복사되었습니다! ✅");
+            } catch (err) {
+                alert("복사 실패. 직접 텍스트를 선택해 복사해주세요.");
+            }
             document.body.removeChild(textArea);
-            alert("공지가 클립보드에 복사되었습니다! ✅");
         };
 
+        // 3. 하이픈 자동 변환 로직 (공백 2개 -> " - ")
         document.addEventListener('DOMContentLoaded', () => {
             const courseInput = document.getElementById('n_course');
             if (courseInput) {
                 courseInput.addEventListener('input', function(e) {
                     const input = e.target;
-                    if (input.value.includes('  ')) {
-                        const newValue = input.value.replace(/  /g, ' - ');
+                    const val = input.value;
+                    if (val.includes('  ')) {
+                        const newValue = val.replace(/  /g, ' - ');
                         input.value = newValue;
                         const lastHyphenIndex = newValue.lastIndexOf(' - ');
                         if (lastHyphenIndex !== -1) {
