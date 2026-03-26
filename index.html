@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>산:우리 일정 생성기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f101a; color: white; }
+        .animate-bottom-up { animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .cosmic-admin-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            position: relative; overflow: hidden; transition: all 0.3s;
+            color: white; font-weight: 800;
+        }
+        .cosmic-admin-btn:hover { transform: scale(1.01); filter: brightness(1.1); }
+        input, select { border: none !important; outline: none !important; }
+        input:focus { ring: 1px solid #10b981 !important; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-[#1a1c2e] w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/5 animate-bottom-up text-left">
+        
+        <div class="p-6 border-b border-white/5 flex justify-between items-center bg-slate-800/50">
+            <div>
+                <h3 class="text-white font-black text-lg tracking-tight">NOTICE GENERATOR</h3>
+                <p class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">San:Woori Official Template</p>
+            </div>
+        </div>
+
+        <div class="p-6 max-h-[70vh] overflow-y-auto space-y-4 custom-scrollbar">
+            <div class="space-y-4">
+                 <div>
+                <label class="text-[10px] font-black text-gray-500 ml-1 mb-1.5 block">🔴 산행지 & 픽업</label>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="n_mt" placeholder="어디로 가나요?" 
+                           class="w-1/2 bg-white/5 h-[48px] rounded-2xl text-white text-sm px-4 focus:ring-1 ring-emerald-500/50 transition-all">
+                    
+                    <div class="flex-1 flex items-center p-1 bg-white/5 rounded-[1.2rem] border border-white/5 h-[48px]">
+                        <input type="radio" name="n_pickup" id="p_ok" value="(픽업 가능)" class="hidden peer/ok" checked>
+                        <label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-[1rem] text-[11px] font-black text-gray-400 cursor-pointer peer-checked/ok:bg-blue-600 peer-checked/ok:text-white transition-all">픽업</label>
+                        
+                        <input type="radio" name="n_pickup" id="p_no" value="(픽업 불가)" class="hidden peer/no">
+                        <label for="p_no" class="flex-1 h-full flex items-center justify-center rounded-[1rem] text-[11px] font-black text-gray-400 cursor-pointer peer-checked/no:bg-red-600 peer-checked/no:text-white transition-all">불가</label>
+                    </div>
+                </div>
+            </div>
+
+                <div>
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟠 일시</label>
+                    <div class="flex items-center w-full gap-2">
+                        <div class="flex-1 flex items-center bg-white/5 border border-white/5 rounded-2xl px-3 h-[44px]">
+                            <input type="number" id="n_month" placeholder="0" class="w-full bg-transparent text-white text-sm text-center">
+                            <span class="text-gray-600 text-[10px] font-black mx-1">월</span>
+                            <input type="number" id="n_day" placeholder="0" class="w-full bg-transparent text-white text-sm text-center">
+                            <span class="text-gray-600 text-[10px] font-black ml-1">일</span>
+                        </div>
+                        <select id="n_ampm" class="w-[65px] shrink-0 h-[44px] bg-slate-800 border border-white/5 rounded-2xl text-white text-[11px] text-center appearance-none cursor-pointer">
+                            <option value="오전" selected>오전</option>
+                            <option value="오후">오후</option>
+                        </select>
+                        <div class="w-[100px] shrink-0 flex items-center bg-white/5 border border-white/5 rounded-2xl px-2 h-[44px]">
+                            <input type="number" id="n_hour" placeholder="0" class="w-full bg-transparent text-white text-sm text-center">
+                            <span class="text-gray-600 text-[10px] font-black mx-0.5">시</span>
+                            <input type="number" id="n_min" placeholder="00" class="w-full bg-transparent text-white text-sm text-center">
+                            <span class="text-gray-600 text-[10px] font-black ml-0.5">분</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="flex flex-col">
+                        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟡 집결지</label>
+                        <input type="text" id="n_meet" placeholder="만남 장소" class="w-full bg-white/5 h-[44px] rounded-2xl text-white text-sm px-4">
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟢 소요시간</label>
+                        <div class="flex items-center bg-white/5 border border-white/5 rounded-2xl px-3 h-[44px] gap-1">
+                            <span class="text-gray-400 text-[11px] font-bold shrink-0">약</span>
+                            <input type="text" id="n_time_h" inputmode="decimal" placeholder="0" class="w-full bg-transparent text-white text-sm text-right">
+                            <span class="text-gray-600 text-[11px] font-black shrink-0">시간</span>
+                            <input type="text" id="n_time_m" inputmode="decimal" placeholder="0" class="w-full bg-transparent text-white text-sm text-right">
+                            <span class="text-gray-600 text-[11px] font-black shrink-0">분</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스</label>
+                    <input type="text" id="n_course" placeholder='스페이스바 두번 누르면 " - " 생깁니다' class="w-full bg-white/5 h-[44px] rounded-2xl text-white text-sm px-4">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="flex flex-col">
+                        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 거리</label>
+                        <div class="flex items-center bg-white/5 border border-white/5 rounded-2xl pr-4 h-[44px]">
+                            <input type="text" id="n_dist" inputmode="decimal" placeholder="0" class="w-full bg-transparent text-white text-sm text-right px-2">
+                            <span class="text-gray-600 text-[11px] font-black ml-1">km</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 난이도</label>
+                        <select id="n_lv" class="w-full h-[44px] bg-slate-800 border border-white/5 px-3 rounded-2xl text-white text-[11px] appearance-none cursor-pointer">
+                            <option value="하 (산책)" selected>하 (산책)</option>
+                            <option value="중하 (약간힘듦)">중하 (약간힘듦)</option>
+                            <option value="중 (평범)">중 (평범)</option>
+                            <option value="중상 (힘듦)">중상 (힘듦)</option>
+                            <option value="상 (매우힘듦)">상 (매우힘듦)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟤 준비물</label>
+                    <input type="text" id="n_etc" value="물, 간식, 기타" class="w-full bg-white/5 h-[44px] rounded-2xl text-white text-sm px-4">
+                </div>
+            </div>
+
+            <button onclick="makeNoticeText()" class="cosmic-admin-btn w-full h-[52px] rounded-2xl text-base mt-2">
+                <span>✨ 일정 생성하기</span>
+            </button>
+
+            <div id="n_result_box" class="hidden mt-4 p-4 bg-white/5 rounded-2xl border border-emerald-500/30">
+                <p class="text-[10px] font-bold text-emerald-500 mb-2 uppercase tracking-widest">Preview & Copy</p>
+                <div id="n_final_text" class="text-xs text-gray-300 leading-relaxed whitespace-pre-wrap mb-4"></div>
+                <button onclick="copyNoticeContent()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-bold transition-colors">
+                    📋 결과 복사하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. 일정 생성 로직
+        window.makeNoticeText = () => {
+            const mt = document.getElementById('n_mt').value || '미정';
+            const pickupOption = document.querySelector('input[name="n_pickup"]:checked');
+            const pickup = pickupOption ? pickupOption.value : "";
+            const month = document.getElementById('n_month').value || '';
+            const day = document.getElementById('n_day').value || '';
+            const ampm = document.getElementById('n_ampm').value;
+            const hour = document.getElementById('n_hour').value || '';
+            const min = document.getElementById('n_min').value || "00";
+            
+            let timeStr = "";
+            if (hour) { timeStr = `${hour}시 ${min}분`; }
+            const dateStr = month ? `${month}월 ${day}일 ${ampm} ${timeStr}` : '추후 공지';
+            
+            const meet = document.getElementById('n_meet').value || '추후 공지';
+
+            // 소요시간 로직
+            const hourVal = document.getElementById('n_time_h').value;
+            const minVal = document.getElementById('n_time_m').value;
+            let time = "";
+            if (hourVal) {
+                time = `약 ${hourVal}시간`;
+                if (minVal && minVal !== "0" && minVal !== "") { time += ` ${minVal}분`; }
+            } else { time = "미정"; }
+
+            const course = document.getElementById('n_course').value || '미정';
+            const distVal = document.getElementById('n_dist').value;
+            const dist = distVal ? `${distVal}km` : '미정';
+            const lv = document.getElementById('n_lv').value;
+            const etc = document.getElementById('n_etc').value;
+
+            const template = `[산:우리 공지]
+🔴산행지: ${mt} ${pickup}
+🟠일시: ${dateStr}
+🟡집결지: ${meet}
+🟢소요시간: ${time}
+🔵산행코스: ${course}
+⚪️거리: ${dist}
+🟣난이도: ${lv}
+🟤준비물: ${etc}
+
+💢산행시 일어나는 모든 사건 사고는 본인의 
+    책임이므로 안전에 유의하여 산행하세요
+💢우천, 강풍 등 기상 악화 시 안전을 위해서 
+    모임이 취소될 수 있습니다
+💢일자, 시간, 장소 조율 가능합니다
+    차량 픽업 관련 문의 서브방에 입장해주세요`;
+
+            document.getElementById('n_final_text').innerText = template;
+            document.getElementById('n_result_box').classList.remove('hidden');
+            document.getElementById('n_result_box').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        // 2. 클립보드 복사 함수
+        window.copyNoticeContent = () => {
+            const text = document.getElementById('n_final_text').innerText;
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert("공지가 클립보드에 복사되었습니다! ✅");
+            } catch (err) {
+                alert("복사 실패. 직접 텍스트를 선택해 복사해주세요.");
+            }
+            document.body.removeChild(textArea);
+        };
+
+        // 3. 모바일/PC 통합 하이픈 로직 (공백 2개 시 " - " 변환)
+        document.addEventListener('DOMContentLoaded', () => {
+            const courseInput = document.getElementById('n_course');
+            if (courseInput) {
+                courseInput.addEventListener('input', function(e) {
+                    const input = e.target;
+                    const val = input.value;
+                    if (val.endsWith(' ')) { // 공백이 연속 2개일 때
+                        input.value = val.slice(0, -2) + " - ";
+                        input.selectionStart = input.selectionEnd = input.value.length;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
