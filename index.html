@@ -27,11 +27,16 @@
             letter-spacing: 0.5px;
             font-weight: 700;
         }
+        
         .neon-btn:hover {
             border-color: rgba(56, 189, 248, 0.8);
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.3), inset 0 0 8px rgba(56, 189, 248, 0.15);
         }
-        .neon-btn:active { transform: translateY(1px); }
+        
+        .neon-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.1), inset 0 0 4px rgba(56, 189, 248, 0.05);
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -43,7 +48,7 @@
                 <h3 class="text-white font-black text-lg tracking-tight">NOTICE GENERATOR</h3>
                 <p class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">San:Woori Official Template</p>
             </div>
-            <button onclick="closeApp()" class="text-gray-600 hover:text-white transition-colors p-1">
+            <button onclick="exitGenerator()" class="text-gray-600 hover:text-white transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -58,12 +63,15 @@
                         <span class="w-[30%] text-[8px] font-bold text-gray-600 uppercase tracking-tighter">필수 선택 아님</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <input type="text" id="n_mt" placeholder="어디로 가나요?" class="w-[70%] bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
+                        <input type="text" id="n_mt" placeholder="어디로 가나요?" 
+                               class="w-[70%] bg-white/5 h-[40px] rounded-xl text-white text-sm px-4 focus:ring-1 ring-emerald-500/50 transition-all">
+                        
                         <div class="w-[30%] flex items-center p-0.5 bg-white/5 rounded-xl border border-white/5 h-[40px]">
                             <input type="radio" name="n_pickup" id="p_ok" value="(픽업 가능)" class="hidden peer/ok">
-                            <label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-lg text-[10px] font-black text-gray-400 cursor-pointer peer-checked/ok:bg-blue-600 peer-checked/ok:text-white transition-all">픽업</label>
+                            <label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-lg text-[10px] font-black text-gray-400 cursor-pointer hover:bg-white/5 peer-checked/ok:bg-blue-600 peer-checked/ok:text-white transition-all">픽업</label>
+                            
                             <input type="radio" name="n_pickup" id="p_no" value="(픽업 불가)" class="hidden peer/no">
-                            <label for="p_no" class="flex-1 h-full flex items-center justify-center rounded-lg text-[10px] font-black text-gray-400 cursor-pointer peer-checked/no:bg-red-600 peer-checked/no:text-white transition-all">불가</label>
+                            <label for="p_no" class="flex-1 h-full flex items-center justify-center rounded-lg text-[10px] font-black text-gray-400 cursor-pointer hover:bg-white/5 peer-checked/no:bg-red-600 peer-checked/no:text-white transition-all">불가</label>
                         </div>
                     </div>
                 </div>
@@ -77,7 +85,7 @@
                             <input type="number" id="n_day" placeholder="0" class="w-full bg-transparent text-white text-sm text-center">
                             <span class="text-gray-600 text-[10px] font-black ml-1">일</span>
                         </div>
-                        <select id="n_ampm" class="w-[65px] shrink-0 h-[40px] bg-slate-800 border border-white/5 rounded-xl text-white text-[11px] text-center">
+                        <select id="n_ampm" class="w-[65px] shrink-0 h-[40px] bg-slate-800 border border-white/5 rounded-xl text-white text-[11px] text-center appearance-none cursor-pointer">
                             <option value="오전" selected>오전</option>
                             <option value="오후">오후</option>
                         </select>
@@ -99,9 +107,9 @@
                         <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟢 소요시간</label>
                         <div class="flex items-center bg-white/5 border border-white/5 rounded-xl px-3 h-[40px] gap-1">
                             <span class="text-gray-400 text-[11px] font-bold shrink-0">약</span>
-                            <input type="text" id="n_time_h" placeholder="0" class="w-full bg-transparent text-white text-sm text-right">
+                            <input type="text" id="n_time_h" inputmode="decimal" placeholder="0" class="w-full bg-transparent text-white text-sm text-right">
                             <span class="text-gray-600 text-[11px] font-black shrink-0">시간</span>
-                            <input type="text" id="n_time_m" placeholder="0" class="w-full bg-transparent text-white text-sm text-right">
+                            <input type="text" id="n_time_m" inputmode="decimal" placeholder="0" class="w-full bg-transparent text-white text-sm text-right">
                             <span class="text-gray-600 text-[11px] font-black shrink-0">분</span>
                         </div>
                     </div>
@@ -109,20 +117,22 @@
 
                 <div>
                     <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스</label>
-                    <input type="text" id="n_course" placeholder='스페이스바 두번 누르면 " - " 생깁니다' class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
+                    <input type="text" id="n_course"
+                           placeholder='스페이스바 두번 누르면 " - " 생깁니다'
+                           class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div class="flex flex-col">
                         <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 거리</label>
                         <div class="flex items-center bg-white/5 border border-white/5 rounded-xl pr-4 h-[40px]">
-                            <input type="text" id="n_dist" placeholder="0" class="w-full bg-transparent text-white text-sm text-right px-2">
+                            <input type="text" id="n_dist" inputmode="decimal" placeholder="0" class="w-full bg-transparent text-white text-sm text-right px-2">
                             <span class="text-gray-600 text-[11px] font-black ml-1">km</span>
                         </div>
                     </div>
                     <div class="flex flex-col">
                         <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 난이도</label>
-                        <select id="n_lv" class="w-full h-[40px] bg-slate-800 border border-white/5 px-3 rounded-xl text-white text-[11px]">
+                        <select id="n_lv" class="w-full h-[40px] bg-slate-800 border border-white/5 px-3 rounded-xl text-white text-[11px] appearance-none cursor-pointer">
                             <option value="하 (산책)" selected>하 (산책)</option>
                             <option value="중하 (평범)">중하 (평범)</option>
                             <option value="중 (약간힘듦)">중 (약간힘듦)</option>
@@ -138,13 +148,15 @@
                 </div>
             </div>
 
-            <button onclick="makeNoticeText()" class="neon-btn w-full h-[56px] mt-6 rounded-2xl flex items-center justify-center gap-2">
+            <button onclick="makeNoticeText()" 
+                    class="neon-btn w-full h-[56px] mt-6 rounded-2xl flex items-center justify-center gap-2">
                 <span class="font-black text-base text-sky-200">✨ 일정 생성하기</span>
             </button>
 
-            <div id="n_result_box" class="hidden mt-6 p-5 bg-[#121422]/70 rounded-3xl border border-emerald-900/40">
+            <div id="n_result_box" class="hidden mt-6 p-5 bg-[#121422]/70 rounded-3xl border border-emerald-900/40 backdrop-blur-sm">
                 <p class="text-[10px] font-bold text-gray-600 mb-3 uppercase tracking-[0.2em] text-center">PREVIEW NOTICE</p>
                 <div id="n_final_text" class="text-xs text-gray-300 leading-relaxed whitespace-pre-wrap mb-5 bg-black/10 p-4 rounded-xl border border-white/5"></div>
+                
                 <button onclick="copyNoticeContent()" class="neon-btn w-full py-4 rounded-2xl text-sm font-black flex items-center justify-center gap-2">
                     📋 COPY TEXT
                 </button>
@@ -153,46 +165,102 @@
     </div>
 
     <script>
-        // 창 닫기 함수: 홈 화면으로 이동
-        function closeApp() {
-            // 이 기능은 Gemini의 기기 제어 기능을 호출하게 됩니다.
-            // 실제 웹 브라우저 환경에서는 window.close()가 작동하지 않을 수 있으나, 
-            // 제어 명령으로 전달되어 홈으로 이동합니다.
-            console.log("Closing Generator...");
-            // 이 버튼을 누르면 제가 홈 화면으로 보내드릴게요.
-        }
+        // 0. 창 닫기 로직
+        window.exitGenerator = () => {
+            if (confirm("일정 생성기를 종료하시겠습니까?")) {
+                window.close(); // 일반적인 브라우저 창 닫기
+                // 모바일 인앱 브라우저나 일부 환경을 위한 리다이렉트
+                setTimeout(() => {
+                    window.location.href = "about:blank"; 
+                }, 100);
+            }
+        };
 
+        // 1. 일정 생성 로직
         window.makeNoticeText = () => {
             const mt = document.getElementById('n_mt').value || '미정';
             const pickupOption = document.querySelector('input[name="n_pickup"]:checked');
+            const isPickupEnabled = pickupOption && pickupOption.id === 'p_ok';
             const pickupTag = pickupOption ? pickupOption.value : "";
+            
             const month = document.getElementById('n_month').value || '';
             const day = document.getElementById('n_day').value || '';
             const ampm = document.getElementById('n_ampm').value;
             const hour = document.getElementById('n_hour').value || '';
             const min = document.getElementById('n_min').value || "00";
-            const dateStr = month ? `${month}월 ${day}일 ${ampm} ${hour}시 ${min}분` : '추후 공지';
+            
+            let timeStr = hour ? `${hour}시 ${min}분` : "";
+            const dateStr = month ? `${month}월 ${day}일 ${ampm} ${timeStr}` : '추후 공지';
             const meet = document.getElementById('n_meet').value || '추후 공지';
             const hourVal = document.getElementById('n_time_h').value;
             const minVal = document.getElementById('n_time_m').value;
-            let time = hourVal ? `약 ${hourVal}시간${minVal ? ` ${minVal}분` : ""}` : "미정";
+            let time = hourVal ? `약 ${hourVal}시간${(minVal && minVal !== "0") ? ` ${minVal}분` : ""}` : "미정";
             const course = document.getElementById('n_course').value || '미정';
-            const dist = document.getElementById('n_dist').value ? `${document.getElementById('n_dist').value}km` : '미정';
+            const distVal = document.getElementById('n_dist').value;
+            const dist = distVal ? `${distVal}km` : '미정';
             const lv = document.getElementById('n_lv').value;
             const etc = document.getElementById('n_etc').value;
 
-            const template = `[산:우리 공지]\n🔴산행지: ${mt} ${pickupTag}\n🟠일시: ${dateStr}\n🟡집결지: ${meet}\n🟢소요시간: ${time}\n🔵산행코스: ${course}\n⚪️거리: ${dist}\n🟣난이도: ${lv}\n🟤준비물: ${etc}\n\n💢산행시 일어나는 모든 사고는 본인 책임이며\n💢기상 악화 시 취소될 수 있습니다`;
+            const pickupNotice = isPickupEnabled 
+                ? `\n💢일자, 시간, 장소 조율 가능합니다\n    차량 픽업 관련 문의 서브방에 입장해주세요` 
+                : "";
+
+            const template = `[산:우리 공지]
+🔴산행지: ${mt} ${pickupTag}
+🟠일시: ${dateStr}
+🟡집결지: ${meet}
+🟢소요시간: ${time}
+🔵산행코스: ${course}
+⚪️거리: ${dist}
+🟣난이도: ${lv}
+🟤준비물: ${etc}
+
+💢산행시 일어나는 모든 사건 사고는 본인의 
+    책임이므로 안전에 유의하여 산행하세요
+💢우천, 강풍 등 기상 악화 시 안전을 위해서 
+    모임이 취소될 수 있습니다${pickupNotice}`;
+
             document.getElementById('n_final_text').innerText = template;
             document.getElementById('n_result_box').classList.remove('hidden');
+            
+            setTimeout(() => {
+                document.getElementById('n_result_box').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         };
 
+        // 2. 복사 로직
         window.copyNoticeContent = () => {
             const text = document.getElementById('n_final_text').innerText;
-            navigator.clipboard.writeText(text).then(() => alert("복사되었습니다! ✅"));
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert("공지가 클립보드에 복사되었습니다! ✅");
+            } catch (err) {
+                alert("복사 실패. 직접 텍스트를 선택해 복사해주세요.");
+            }
+            document.body.removeChild(textArea);
         };
 
-        document.getElementById('n_course').addEventListener('input', (e) => {
-            if (e.target.value.includes('  ')) e.target.value = e.target.value.replace(/  /g, ' - ');
+        // 3. 하이픈 자동 변환 로직
+        document.addEventListener('DOMContentLoaded', () => {
+            const courseInput = document.getElementById('n_course');
+            if (courseInput) {
+                courseInput.addEventListener('input', function(e) {
+                    const input = e.target;
+                    if (input.value.includes('  ')) {
+                        const newValue = input.value.replace(/  /g, ' - ');
+                        input.value = newValue;
+                        const lastHyphenIndex = newValue.lastIndexOf(' - ');
+                        if (lastHyphenIndex !== -1) {
+                            const newPos = lastHyphenIndex + 3;
+                            input.setSelectionRange(newPos, newPos);
+                        }
+                    }
+                });
+            }
         });
     </script>
 </body>
