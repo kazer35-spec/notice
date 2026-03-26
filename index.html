@@ -15,28 +15,31 @@
         
         input, select { border: none !important; outline: none !important; }
         
-        /* 다크 블루 네온 버튼 스타일 */
+        /* 다크 블루 네온 버튼 스타일 (양쪽 버튼 동일 적용) */
         .neon-btn {
             position: relative;
-            background: #111421;
-            color: #7dd3fc;
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.15), inset 0 0 5px rgba(56, 189, 248, 0.1);
+            background: #111421; /* 더 어두운 남색 배경 */
+            color: #7dd3fc;    /* 차분한 하늘색 텍스트 */
+            border: 1px solid rgba(56, 189, 248, 0.4); /* 연한 블루 테두리 */
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.15), inset 0 0 5px rgba(56, 189, 248, 0.1); /* 은은한 내부외 글로우 */
             transition: all 0.2s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 700;
         }
         
+        /* 호버 시 더 밝아지는 효과 */
         .neon-btn:hover {
             border-color: rgba(56, 189, 248, 0.8);
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.3), inset 0 0 8px rgba(56, 189, 248, 0.15);
         }
         
+        /* 클릭 시 살짝 눌리는 효과 */
         .neon-btn:active {
             transform: translateY(1px);
             box-shadow: 0 0 8px rgba(56, 189, 248, 0.1), inset 0 0 4px rgba(56, 189, 248, 0.05);
         }
+
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -48,8 +51,8 @@
                 <h3 class="text-white font-black text-lg tracking-tight">NOTICE GENERATOR</h3>
                 <p class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">San:Woori Official Template</p>
             </div>
-            <button onclick="exitGenerator()" class="text-gray-600 hover:text-white transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button class="text-gray-600 hover:text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
@@ -165,20 +168,10 @@
     </div>
 
     <script>
-        // 0. 창 닫기 로직
-        window.exitGenerator = () => {
-            if (confirm("일정 생성기를 종료하시겠습니까?")) {
-                window.close(); // 일반적인 브라우저 창 닫기
-                // 모바일 인앱 브라우저나 일부 환경을 위한 리다이렉트
-                setTimeout(() => {
-                    window.location.href = "about:blank"; 
-                }, 100);
-            }
-        };
-
-        // 1. 일정 생성 로직
+        // 1. 일정 생성 로직 (기존 기능 그대로 유지)
         window.makeNoticeText = () => {
             const mt = document.getElementById('n_mt').value || '미정';
+            
             const pickupOption = document.querySelector('input[name="n_pickup"]:checked');
             const isPickupEnabled = pickupOption && pickupOption.id === 'p_ok';
             const pickupTag = pickupOption ? pickupOption.value : "";
@@ -191,10 +184,13 @@
             
             let timeStr = hour ? `${hour}시 ${min}분` : "";
             const dateStr = month ? `${month}월 ${day}일 ${ampm} ${timeStr}` : '추후 공지';
+            
             const meet = document.getElementById('n_meet').value || '추후 공지';
+
             const hourVal = document.getElementById('n_time_h').value;
             const minVal = document.getElementById('n_time_m').value;
             let time = hourVal ? `약 ${hourVal}시간${(minVal && minVal !== "0") ? ` ${minVal}분` : ""}` : "미정";
+
             const course = document.getElementById('n_course').value || '미정';
             const distVal = document.getElementById('n_dist').value;
             const dist = distVal ? `${distVal}km` : '미정';
@@ -223,12 +219,13 @@
             document.getElementById('n_final_text').innerText = template;
             document.getElementById('n_result_box').classList.remove('hidden');
             
+            // 결과창이 자연스럽게 보이도록 살짝 스크롤
             setTimeout(() => {
                 document.getElementById('n_result_box').scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100);
         };
 
-        // 2. 복사 로직
+        // 2. 복사 로직 (기존 기능 그대로 유지)
         window.copyNoticeContent = () => {
             const text = document.getElementById('n_final_text').innerText;
             const textArea = document.createElement("textarea");
@@ -244,7 +241,7 @@
             document.body.removeChild(textArea);
         };
 
-        // 3. 하이픈 자동 변환 로직
+        // 3. 하이픈 자동 변환 로직 (기존 기능 그대로 유지)
         document.addEventListener('DOMContentLoaded', () => {
             const courseInput = document.getElementById('n_course');
             if (courseInput) {
