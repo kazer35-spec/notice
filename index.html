@@ -217,14 +217,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const input = e.target;
             const val = input.value;
             
-            // 공백이 2개 연속으로 들어오면 " - "로 치환
+            // 공백이 2개 연속('  ')으로 들어있는지 확인
             if (val.includes('  ')) {
-                const newValue = val.replace('  ', ' - ');
+                // 모든 연속 공백을 ' - '로 치환
+                const newValue = val.replace(/  /g, ' - ');
                 input.value = newValue;
                 
-                // 커서 위치를 치환된 문자 뒤로 고정
-                const newPos = newValue.indexOf(' - ') + 3;
-                input.setSelectionRange(newPos, newPos);
+                // [수정 포인트] 가장 마지막에 추가된 ' - '의 위치를 찾아서 그 뒤로 커서를 보냄
+                const lastHyphenIndex = newValue.lastIndexOf(' - ');
+                if (lastHyphenIndex !== -1) {
+                    // ' - '가 3글자이므로 index + 3 위치로 커서를 이동
+                    const newPos = lastHyphenIndex + 3;
+                    input.setSelectionRange(newPos, newPos);
+                }
             }
         });
     }
