@@ -210,19 +210,26 @@ class="w-full bg-white/5 h-[44px] rounded-2xl text-white text-sm outline-none px
         };
 
         // 3. 모바일/PC 통합 하이픈 로직 (공백 2개 시 " - " 변환)
-        document.addEventListener('DOMContentLoaded', () => {
-            const courseInput = document.getElementById('n_course');
-            if (courseInput) {
-                courseInput.addEventListener('input', function(e) {
-                    const input = e.target;
-                    const val = input.value;
-                    if (val.endsWith(' ')) { // 공백이 연속 2개일 때
-                        input.value = val.slice(0, -2) + " - ";
-                        input.selectionStart = input.selectionEnd = input.value.length;
-                    }
-                });
+document.addEventListener('DOMContentLoaded', () => {
+    const courseInput = document.getElementById('n_course');
+    if (courseInput) {
+        courseInput.addEventListener('input', function(e) {
+            const input = e.target;
+            const val = input.value;
+            
+            // 공백이 2개 연속으로 들어오면 " - "로 치환
+            if (val.includes('  ')) {
+                const newValue = val.replace('  ', ' - ');
+                input.value = newValue;
+                
+                // 커서 위치를 치환된 문자 뒤로 고정
+                const newPos = newValue.indexOf(' - ') + 3;
+                input.setSelectionRange(newPos, newPos);
             }
         });
+    }
+});
+
     </script>
 </body>
 </html>
