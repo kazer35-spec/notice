@@ -34,29 +34,69 @@
 
         <div class="p-6 max-h-[75vh] overflow-y-auto space-y-4 custom-scrollbar">
             <div>
-                <label class="text-[10px] font-black text-gray-500 ml-1 mb-1.5 block text-orange-400 uppercase tracking-wider">🔴 산행지(자동완성 저장중)</label>
+                <label class="text-[10px] font-black text-orange-400 uppercase tracking-wider ml-1 mb-1.5 block">🔴 산행지 (자동완성 캐시적용)</label>
                 <div class="flex items-center gap-2">
-                    <input type="text" id="n_mt" placeholder="어디로 가나요?" class="w-[45%] bg-white/5 h-[42px] rounded-xl text-white text-sm px-3 focus:ring-1 ring-emerald-500/50 transition-all outline-none">
+                    <input type="text" id="n_mt" placeholder="산 이름 입력" class="w-[45%] bg-white/5 h-[42px] rounded-xl text-white text-sm px-3 focus:ring-1 ring-emerald-500/50 transition-all outline-none">
                     <select id="official_mt_select" class="w-[30%] h-[42px] bg-slate-800 border border-white/10 rounded-xl text-white text-[10px] text-center font-bold px-1 appearance-none">
                         <option value="">인증 산 ⛰️</option>
                     </select>
                     <div class="w-[25%] flex items-center p-0.5 bg-white/5 rounded-xl border border-white/5 h-[42px]">
-                        <input type="radio" name="n_pickup" id="p_ok" value="(픽업 가능)" class="hidden peer/ok"><label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-lg text-[9px] font-black text-gray-400 cursor-pointer peer-checked/ok:bg-blue-600 peer-checked/ok:text-white leading-none">픽업</label>
-                        <input type="radio" name="n_pickup" id="p_no" value="(픽업 불가)" class="hidden peer/no"><label for="p_no" class="flex-1 h-full flex items-center justify-center rounded-lg text-[9px] font-black text-gray-400 cursor-pointer peer-checked/no:bg-red-600 peer-checked/no:text-white leading-none">불가</label>
+                        <input type="radio" name="n_pickup" id="p_ok" value="(픽업 가능)" class="hidden peer/ok">
+                        <label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-lg text-[9px] font-black text-gray-400 cursor-pointer peer-checked/ok:bg-blue-600 peer-checked/ok:text-white leading-none">픽업</label>
+                        <input type="radio" name="n_pickup" id="p_no" value="(픽업 불가)" class="hidden peer/no">
+                        <label for="p_no" class="flex-1 h-full flex items-center justify-center rounded-lg text-[9px] font-black text-gray-400 cursor-pointer peer-checked/no:bg-red-600 peer-checked/no:text-white leading-none">불가</label>
                     </div>
                 </div>
             </div>
 
-            <div><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟠 일시</label><div class="flex items-center w-full gap-2"><div class="flex-1 flex items-center bg-white/5 rounded-xl px-3 h-[42px]"><input type="number" id="n_month" placeholder="0" class="w-full bg-transparent text-white text-sm text-center">월<input type="number" id="n_day" placeholder="0" class="w-full bg-transparent text-white text-sm text-center">일</div><select id="n_ampm" class="w-[65px] h-[42px] bg-slate-800 rounded-xl text-white text-[11px] text-center"><option value="오전">오전</option><option value="오후">오후</option></select><div class="w-[105px] flex items-center bg-white/5 rounded-xl px-2 h-[42px]"><input type="number" id="n_hour" placeholder="0" class="w-full bg-transparent text-white text-sm text-center">시<input type="number" id="n_min" placeholder="00" class="w-full bg-transparent text-white text-sm text-center">분</div></div></div>
+            <div>
+                <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block uppercase">🟠 Date & Time</label>
+                <div class="flex items-center w-full gap-2">
+                    <div class="flex-1 flex items-center bg-white/5 rounded-xl px-3 h-[42px]">
+                        <input type="number" id="n_month" placeholder="0" class="w-full bg-transparent text-white text-sm text-center">월
+                        <input type="number" id="n_day" placeholder="0" class="w-full bg-transparent text-white text-sm text-center">일
+                    </div>
+                    <select id="n_ampm" class="w-[65px] h-[42px] bg-slate-800 rounded-xl text-white text-[11px] text-center">
+                        <option value="오전">오전</option><option value="오후">오후</option>
+                    </select>
+                    <div class="w-[105px] flex items-center bg-white/5 rounded-xl px-2 h-[42px]">
+                        <input type="number" id="n_hour" placeholder="0" class="w-full bg-transparent text-white text-sm text-center">시
+                        <input type="number" id="n_min" placeholder="00" class="w-full bg-transparent text-white text-sm text-center">분
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col"><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟡 집결지</label><input type="text" id="n_meet" placeholder="만남 장소" class="w-full bg-white/5 h-[42px] rounded-xl text-white text-sm px-4"></div>
-                <div class="flex flex-col"><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟢 소요시간</label><div class="flex items-center bg-white/5 rounded-xl px-2 h-[42px] gap-0.5 flex-nowrap overflow-hidden"><span class="text-gray-400 text-[10px] font-bold shrink-0">약</span><input type="text" id="n_time_h" class="w-full bg-transparent text-white text-sm text-right"><span class="text-gray-600 text-[10px] shrink-0">시간</span><input type="text" id="n_time_m" class="w-full bg-transparent text-white text-sm text-right"><span class="text-gray-600 text-[10px] shrink-0">분</span></div></div>
+                <div class="flex flex-col">
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟢 소요시간</label>
+                    <div class="flex items-center bg-white/5 rounded-xl px-2 h-[42px] gap-0.5 overflow-hidden">
+                        <span class="text-gray-400 text-[10px] font-bold shrink-0">약</span>
+                        <input type="text" id="n_time_h" class="w-full bg-transparent text-white text-sm text-right">
+                        <span class="text-gray-600 text-[10px] shrink-0">시간</span>
+                        <input type="text" id="n_time_m" class="w-full bg-transparent text-white text-sm text-right">
+                        <span class="text-gray-600 text-[10px] shrink-0">분</span>
+                    </div>
+                </div>
             </div>
+
             <div><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스 (스페이스 2번 = ' - ')</label><input type="text" id="n_course" class="w-full bg-white/5 h-[42px] rounded-xl text-white text-sm px-4"></div>
+
             <div class="grid grid-cols-2 gap-3">
-                <div class="flex flex-col"><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 거리</label><div class="flex items-center bg-white/5 rounded-xl pr-4 h-[42px]"><input type="text" id="n_dist" class="w-full bg-transparent text-white text-sm text-right px-2"><span class="ml-1 text-[10px] text-gray-600 font-black">km</span></div></div>
-                <div class="flex flex-col"><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 난이도</label><select id="n_lv" class="w-full h-[42px] bg-slate-800 px-3 rounded-xl text-white text-[11px]"><option value="하 (산책)">하 (산책)</option><option value="중하 (평범)">중하 (평범)</option><option value="중 (약간힘듦)">중 (약간힘듦)</option><option value="중상 (힘듦)">중상 (힘듦)</option><option value="상 (매우힘듦)">상 (매우힘듦)</option></select></div>
+                <div class="flex flex-col">
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 거리</label>
+                    <div class="flex items-center bg-white/5 rounded-xl pr-4 h-[42px]">
+                        <input type="text" id="n_dist" class="w-full bg-transparent text-white text-sm text-right px-2"><span class="ml-1 text-[10px] text-gray-600 font-black">km</span>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 난이도</label>
+                    <select id="n_lv" class="w-full h-[42px] bg-slate-800 px-3 rounded-xl text-white text-[11px]">
+                        <option value="하 (산책)">하 (산책)</option><option value="중하 (평범)">중하 (평범)</option><option value="중 (약간힘듦)">중 (약간힘듦)</option><option value="중상 (힘듦)">중상 (힘듦)</option><option value="상 (매우힘듦)">상 (매우힘듦)</option>
+                    </select>
+                </div>
             </div>
+
             <div><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟤 준비물</label><input type="text" id="n_etc" value="물, 간식, 기타" class="w-full bg-white/5 h-[42px] rounded-xl text-white text-sm px-4"></div>
 
             <button id="btn_generate" class="neon-btn w-full h-[56px] mt-4 rounded-2xl flex items-center justify-center gap-2 font-black">✨ 일정 생성 & 제안 저장</button>
@@ -98,44 +138,43 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const loadOfficialOptions = async () => {
+        // --- [알뜰 코드: 캐싱 시스템] ---
+        const CACHE_KEY = "san_woori_mountains";
+        const CACHE_TIME_KEY = "san_woori_cache_time";
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+        let cachedMountains = [];
+
+        const loadMountainsSmart = async () => {
+            const lastFetch = localStorage.getItem(CACHE_TIME_KEY);
+            const now = Date.now();
+            const localData = localStorage.getItem(CACHE_KEY);
+
+            if (localData && lastFetch && (now - lastFetch < ONE_DAY)) {
+                cachedMountains = JSON.parse(localData);
+                renderOptions(cachedMountains);
+                return;
+            }
+
+            try {
+                const snap = await getDocs(collection(db, "mountains"));
+                const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                localStorage.setItem(CACHE_KEY, JSON.stringify(list));
+                localStorage.setItem(CACHE_TIME_KEY, now.toString());
+                cachedMountains = list;
+                renderOptions(list);
+            } catch (e) { console.error(e); }
+        };
+
+        const renderOptions = (list) => {
             const select = document.getElementById('official_mt_select');
             select.innerHTML = '<option value="">인증 산 ⛰️</option>';
-            const snap = await getDocs(collection(db, "mountains"));
-            snap.forEach(d => {
-                const data = d.data();
-                if(data.meet && data.meet.trim() !== "" && data.meet !== "추후 공지") {
+            list.forEach(m => {
+                if(m.meet && m.meet !== "추후 공지") {
                     const opt = document.createElement('option');
-                    opt.value = d.id; opt.innerText = d.id;
+                    opt.value = m.id; opt.innerText = m.id;
                     select.appendChild(opt);
                 }
             });
-        };
-        loadOfficialOptions();
-
-        let typingTimer;
-        document.getElementById('n_mt').addEventListener('input', (e) => {
-            clearTimeout(typingTimer);
-            const mtName = e.target.value.trim();
-            if (mtName.length >= 2) {
-                typingTimer = setTimeout(async () => {
-                    const snap = await getDoc(doc(db, "mountains", mtName));
-                    if (snap.exists()) {
-                        const data = snap.data();
-                        if (data.meet && data.meet !== "추후 공지") {
-                            fillFields(data);
-                        }
-                    }
-                }, 500);
-            }
-        });
-
-        document.getElementById('official_mt_select').onchange = async (e) => {
-            const mtName = e.target.value;
-            if(!mtName) return;
-            document.getElementById('n_mt').value = mtName;
-            const snap = await getDoc(doc(db, "mountains", mtName));
-            if(snap.exists()) fillFields(snap.data());
         };
 
         const fillFields = (d) => {
@@ -147,8 +186,38 @@
             document.getElementById('n_lv').value = d.lv || '하 (산책)';
         };
 
+        // --- [이벤트 리스너] ---
+        // 1. 직접 입력 자동완성 (캐시 검색)
+        document.getElementById('n_mt').addEventListener('input', (e) => {
+            const mtName = e.target.value.trim();
+            if(mtName.length >= 2) {
+                const found = cachedMountains.find(m => m.id === mtName);
+                if(found && found.meet && found.meet !== "추후 공지") fillFields(found);
+            }
+        });
+
+        // 2. 선택창 변경 시
+        document.getElementById('official_mt_select').onchange = (e) => {
+            const mtName = e.target.value;
+            if(!mtName) return;
+            document.getElementById('n_mt').value = mtName;
+            const found = cachedMountains.find(m => m.id === mtName);
+            if(found) fillFields(found);
+        };
+
+        // 3. 코스 자동 변환
+        document.getElementById('n_course').oninput = (e) => {
+            if(e.target.value.includes('  ')) e.target.value = e.target.value.replace(/  /g, ' - ');
+        };
+
+        // 4. 관리자 인증 & 모달 제어
         window.openAdminAuth = () => { document.getElementById('admin_modal').style.display = 'flex'; };
-        window.closeAdminModal = () => { document.getElementById('admin_modal').style.display = 'none'; };
+        window.closeAdminModal = () => { 
+            document.getElementById('admin_modal').style.display = 'none'; 
+            document.getElementById('auth_view').classList.remove('hidden');
+            document.getElementById('draft_view').classList.add('hidden');
+        };
+
         document.getElementById('btn_auth_submit').onclick = async () => {
             const pw = document.getElementById('admin_input_pw').value;
             const config = await getDoc(doc(db, "admin_settings", "config"));
@@ -164,12 +233,7 @@
             snap.forEach(d => {
                 const div = document.createElement('div');
                 div.className = "bg-white/5 border border-white/5 p-3 rounded-2xl flex justify-between items-center";
-                div.innerHTML = `
-                    <div class="flex-1"><p class="text-xs font-bold text-white">${d.id}</p></div>
-                    <div class="flex gap-2">
-                        <button onclick="approveMt('${d.id}')" class="bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">승인</button>
-                        <button onclick="deleteDraft('${d.id}')" class="bg-red-600/20 text-red-400 border border-red-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">삭제</button>
-                    </div>`;
+                div.innerHTML = `<div class="flex-1"><p class="text-xs font-bold text-white">${d.id}</p></div><div class="flex gap-2"><button onclick="approveMt('${d.id}')" class="bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">승인</button><button onclick="deleteDraft('${d.id}')" class="bg-red-600/20 text-red-400 border border-red-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">삭제</button></div>`;
                 list.appendChild(div);
             });
         };
@@ -177,31 +241,27 @@
         window.approveMt = async (id) => {
             if(!confirm(`'${id}' 정보를 공식 리스트로 이전할까요?`)) return;
             const snap = await getDoc(doc(db, "mountain_drafts", id));
-            await setDoc(doc(db, "mountains", id), { ...snap.data(), isOfficial: true, approvedAt: serverTimestamp() });
+            await setDoc(doc(db, "mountains", id), { ...snap.data(), isOfficial: true });
             await deleteDoc(doc(db, "mountain_drafts", id));
-            alert("공식 등록 완료!"); loadDrafts(); loadOfficialOptions();
+            alert("공식 등록 완료! 캐시 갱신을 위해 새로고침하세요."); loadDrafts();
         };
 
         window.deleteDraft = async (id) => {
-            if(!confirm(`'${id}' 정보를 목록에서 영구 삭제하시겠습니까?`)) return;
+            if(!confirm(`삭제하시겠습니까?`)) return;
             await deleteDoc(doc(db, "mountain_drafts", id));
-            alert("삭제되었습니다."); loadDrafts();
+            loadDrafts();
         };
 
-        // --- 생성 로직 수정 ---
+        // --- [공지 생성 & 저장 메인 로직] ---
         document.getElementById('btn_generate').onclick = async () => {
             const mt = document.getElementById('n_mt').value.trim() || '미정';
             const pickupOpt = document.querySelector('input[name="n_pickup"]:checked');
             
             let pTag = ""; 
             let pNotice = "";
-            
-            // 픽업이 선택된 경우에만 작동
             if (pickupOpt) {
                 pTag = ` ${pickupOpt.value}`; 
-                if (pickupOpt.id === 'p_ok') {
-                    pNotice = `\n💢일자, 시간, 장소 조율 가능합니다\n    차량 픽업 관련 문의 서브방에 입장해주세요`;
-                }
+                if (pickupOpt.id === 'p_ok') pNotice = `\n💢일자, 시간, 장소 조율 가능합니다\n    차량 픽업 관련 문의 서브방에 입장해주세요`;
             }
 
             const m = document.getElementById('n_month').value; const d = document.getElementById('n_day').value;
@@ -216,14 +276,13 @@
 
             const safety = `💢산행시 일어나는 모든 사건 사고는 본인의 \n    책임이므로 안전에 유의하여 산행하세요\n💢우천, 강풍 등 기상 악화 시 안전을 위해서 \n    모임이 취소될 수 있습니다\n💢참석자 유무 상황에 따라 시간 변경 및 \n    일정 취소될 수 있습니다`;
 
-            // pTag와 pNotice는 선택시에만 값이 들어감
             const template = `[산:우리 산행 공지]\n🔴산행지: ${mt}${pTag}\n🟠일시: ${m}월 ${d}일 ${ampm} ${h}시 ${min}분\n🟡집결지: ${meet}\n🟢소요시간: ${dur}\n🔵산행코스: ${course}\n⚪️거리: ${dist}\n🟣난이도: ${lv}\n🟤준비물: ${etc}\n\n${safety}${pNotice}`;
 
             document.getElementById('n_final_text').innerText = template;
-            const resBox = document.getElementById('n_result_box');
-            resBox.classList.remove('hidden');
-            setTimeout(() => { resBox.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+            document.getElementById('n_result_box').classList.remove('hidden');
+            document.getElementById('n_result_box').scrollIntoView({ behavior: 'smooth' });
 
+            // DB 제안 저장
             if(mt !== '미정') {
                 await setDoc(doc(db, "mountain_drafts", mt), {
                     meet, time_h: th, time_m: tm, course, dist: document.getElementById('n_dist').value, lv, updatedAt: serverTimestamp()
@@ -233,12 +292,11 @@
 
         document.getElementById('btn_copy').onclick = () => {
             navigator.clipboard.writeText(document.getElementById('n_final_text').innerText);
-            alert("복사 완료! ✅");
+            alert("공지가 복사되었습니다! ✅");
         };
 
-        document.getElementById('n_course').oninput = (e) => {
-            if(e.target.value.includes('  ')) e.target.value = e.target.value.replace(/  /g, ' - ');
-        };
+        // 앱 시작
+        loadMountainsSmart();
     </script>
 </body>
 </html>
