@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>산:우리 일정 생성기 (Firebase 통합)</title>
+    <title>산:우리 일정 생성기 (데이터 분리 통합)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -40,15 +40,16 @@
         <div class="p-6 border-b border-white/5 flex justify-between items-center bg-slate-800/50">
             <div>
                 <h3 class="text-white font-black text-lg tracking-tight">NOTICE GENERATOR</h3>
-                <p class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">San:Woori Official Template</p>
+                <p class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">San:Woori Draft System</p>
             </div>
         </div>
 
         <div class="p-6 max-h-[75vh] overflow-y-auto space-y-4 custom-scrollbar">
             <div class="space-y-4">
                 <div>
-                    </div>
-                     <label class="w-[70%] text-[10px] font-black text-gray-500">🔴 산행지&픽업</label>
+                    
+
+                 <label class="w-[70%] text-[10px] font-black text-gray-500">🔴 산행지&픽업</label>
                         <span class="w-[30%] text-[8px] font-bold text-gray-600 uppercase tracking-tighter">픽업 체크시 내용 변동</span>
                     </div>
                     <div class="flex items-center gap-2">
@@ -135,11 +136,10 @@
                     <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟤 준비물</label>
                     <input type="text" id="n_etc" value="물, 간식, 기타" class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
                 </div>
-            </div>
-
+        </div>
 
             <button id="btn_generate" class="neon-btn w-full h-[56px] mt-6 rounded-2xl flex items-center justify-center gap-2">
-                <span class="font-black text-base text-sky-200">✨ 일정 생성 & 자동저장</span>
+                <span class="font-black text-base text-sky-200">✨ 일정 생성 & 제안 데이터 저장</span>
             </button>
 
             <div id="n_result_box" class="hidden mt-6 p-5 bg-[#121422]/70 rounded-3xl border border-emerald-900/40 backdrop-blur-sm">
@@ -154,9 +154,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-        // ✅ 사용자님께서 제공해주신 Firebase 설정값 적용 완료
         const firebaseConfig = {
             apiKey: "AIzaSyBoAh3V3WrHg_wo53g1LHM0UW3-y6w2deg",
             authDomain: "san-woori-db.firebaseapp.com",
@@ -169,14 +168,21 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- 기능 1. 산 이름 입력 시 데이터 자동 불러오기 ---
+        // --- 1. 데이터 불러오기 로직 (공식 -> 제안 순서로 검색) ---
         document.getElementById('n_mt').addEventListener('blur', async (e) => {
             const mtName = e.target.value.trim();
             if (!mtName || mtName === '미정') return;
 
             try {
-                const docRef = doc(db, "mountains", mtName);
-                const docSnap = await getDoc(docRef);
+                // [A] 먼저 공식 데이터(mountains) 확인
+                let docRef = doc(db, "mountains", mtName);
+                let docSnap = await getDoc(docRef);
+
+                // [B] 공식 데이터가 없으면 제안 데이터(mountain_drafts) 확인
+                if (!docSnap.exists()) {
+                    docRef = doc(db, "mountain_drafts", mtName);
+                    docSnap = await getDoc(docRef);
+                }
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -186,14 +192,14 @@
                     document.getElementById('n_course').value = data.course || '';
                     document.getElementById('n_dist').value = data.dist || '';
                     document.getElementById('n_lv').value = data.lv || '하 (산책)';
-                    console.log("데이터 불러오기 완료:", mtName);
+                    console.log(`성공: ${docSnap.ref.parent.id}에서 불러옴`);
                 }
             } catch (err) {
-                console.error("데이터 로드 실패:", err);
+                console.error("불러오기 오류:", err);
             }
         });
 
-        // --- 기능 2. 공지 생성 및 데이터 자동 저장 ---
+        // --- 2. 일정 생성 및 "제안(Draft)" 공간에만 저장 ---
         window.makeNoticeText = async () => {
             const mt = document.getElementById('n_mt').value.trim() || '미정';
             const pickupOption = document.querySelector('input[name="n_pickup"]:checked');
@@ -248,21 +254,21 @@
                 document.getElementById('n_result_box').scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100);
 
-            // [DB 자동 저장]
+            // [저장 로직] 공식 데이터(mountains)가 아닌 제안 데이터(mountain_drafts)로 분리 저장
             if (mt !== '미정') {
                 try {
-                    await setDoc(doc(db, "mountains", mt), {
+                    await setDoc(doc(db, "mountain_drafts", mt), {
                         meet: meet,
                         time_h: hourVal,
                         time_m: minVal,
                         course: course,
                         dist: distVal,
                         lv: lv,
-                        updatedAt: new Date()
+                        updatedAt: serverTimestamp()
                     }, { merge: true });
-                    console.log("DB 저장 완료:", mt);
+                    console.log("제안 데이터 저장 완료");
                 } catch (err) {
-                    console.error("DB 저장 실패:", err);
+                    console.error("데이터 저장 실패:", err);
                 }
             }
         };
@@ -271,7 +277,7 @@
     </script>
 
     <script>
-        // 복사 기능 및 편의 UI 로직
+        // 복사 및 부가 UI 기능
         window.copyNoticeContent = () => {
             const text = document.getElementById('n_final_text').innerText;
             const textArea = document.createElement("textarea");
@@ -280,10 +286,9 @@
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-            alert("공지가 클립보드에 복사되었습니다! ✅");
+            alert("공지가 복사되었습니다! ✅");
         };
 
-        // 코스 입력 시 스페이스 2번을 ' - '로 변환
         document.addEventListener('DOMContentLoaded', () => {
             const courseInput = document.getElementById('n_course');
             courseInput.addEventListener('input', function(e) {
