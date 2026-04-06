@@ -82,10 +82,10 @@
     </div>
 
     <div id="admin_modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-        <div class="bg-[#1a1c2e] w-full max-w-md rounded-[2rem] border border-white/10 p-6 overflow-hidden">
+        <div class="bg-[#1a1c2e] w-full max-w-md rounded-[2rem] border border-white/10 p-6">
             <div id="auth_view">
-                <h4 class="text-white font-black mb-4 uppercase">Admin Access</h4>
-                <input type="password" id="admin_input_pw" placeholder="암호 입력" class="w-full bg-white/5 h-12 rounded-xl text-white px-4 mb-4">
+                <h4 class="text-white font-black mb-4 uppercase text-center">Admin Access</h4>
+                <input type="password" id="admin_input_pw" placeholder="암호 입력" class="w-full bg-white/5 h-12 rounded-xl text-white px-4 mb-4 text-center">
                 <div class="flex gap-2"><button onclick="closeAdminModal()" class="flex-1 h-12 bg-gray-800 rounded-xl font-bold text-xs">취소</button><button id="btn_auth_submit" class="flex-1 h-12 bg-sky-600 rounded-xl font-bold text-xs text-white">확인</button></div>
             </div>
             <div id="draft_view" class="hidden">
@@ -110,7 +110,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- [캐싱 로직] ---
         const CACHE_KEY = "san_woori_mountains";
         const CACHE_TIME_KEY = "san_woori_cache_time";
         const ONE_DAY = 24 * 60 * 60 * 1000;
@@ -137,13 +136,17 @@
             } catch (e) { console.error(e); }
         };
 
+        // --- [관리자님 요청: 집결지 정보가 있는 산만 필터링] ---
         const renderOptions = (list) => {
             const select = document.getElementById('official_mt_select');
             select.innerHTML = '<option value="">인증 산 ⛰️</option>';
             list.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.id; opt.innerText = m.id;
-                select.appendChild(opt);
+                // meet 필드가 있고, 비어있지 않으며, "추후 공지"가 아닐 때만 목록에 추가
+                if(m.meet && m.meet.trim() !== "" && m.meet !== "추후 공지") {
+                    const opt = document.createElement('option');
+                    opt.value = m.id; opt.innerText = m.id;
+                    select.appendChild(opt);
+                }
             });
         };
 
@@ -156,7 +159,6 @@
             document.getElementById('n_lv').value = d.lv || '하 (산책)';
         };
 
-        // --- [이벤트 리스너] ---
         document.getElementById('n_mt').addEventListener('input', (e) => {
             const mtName = e.target.value.trim();
             if(mtName.length >= 2) {
@@ -200,30 +202,25 @@
             });
         };
 
-        // --- [수정된 승인 로직: merge 옵션 추가] ---
+        // --- [승인 로직: merge 옵션으로 기존 데이터(좌표/높이) 보호] ---
         window.approveMt = async (id) => {
-            if(!confirm(`'${id}' 정보를 공식 리스트와 병합할까요?\n(좌표 및 높이 정보가 안전하게 유지됩니다)`)) return;
+            if(!confirm(`'${id}' 정보를 공식 리스트에 병합할까요?\n(기존 좌표/높이 정보는 안전하게 유지됩니다)`)) return;
             const snap = await getDoc(doc(db, "mountain_drafts", id));
             if(snap.exists()) {
-                // { merge: true } 를 사용하여 기존 필드를 보존함
                 await setDoc(doc(db, "mountains", id), { 
                     ...snap.data(), 
                     isOfficial: true,
                     updatedAt: serverTimestamp() 
-                }, { merge: true });
+                }, { merge: true }); // 이 부분이 기존 데이터를 보호합니다.
                 await deleteDoc(doc(db, "mountain_drafts", id));
-                alert("병합 완료! ✅"); loadDrafts();
+                alert("성공적으로 병합되었습니다! ✅"); loadDrafts();
             }
         };
 
         window.deleteDraft = async (id) => {
-            if(confirm(`제안을 삭제하시겠습니까?`)) {
-                await deleteDoc(doc(db, "mountain_drafts", id));
-                loadDrafts();
-            }
+            if(confirm(`제안을 삭제하시겠습니까?`)) { await deleteDoc(doc(db, "mountain_drafts", id)); loadDrafts(); }
         };
 
-        // --- [공지 생성 및 제안 저장] ---
         document.getElementById('btn_generate').onclick = async () => {
             const mt = document.getElementById('n_mt').value.trim() || '미정';
             const pickupOpt = document.querySelector('input[name="n_pickup"]:checked');
@@ -252,7 +249,6 @@
             document.getElementById('n_result_box').scrollIntoView({ behavior: 'smooth' });
 
             if(mt !== '미정') {
-                // 임시 저장소에도 merge: true를 적용하여 유연하게 데이터 축적
                 await setDoc(doc(db, "mountain_drafts", mt), {
                     meet, time_h: th, time_m: tm, course, dist: document.getElementById('n_dist').value, lv, updatedAt: serverTimestamp()
                 }, { merge: true });
