@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>산:우리 일정 생성기 (Dark Mode Style)</title>
+    <title>산:우리 일정 생성기 (Firebase 통합)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -15,31 +15,22 @@
         
         input, select { border: none !important; outline: none !important; }
         
-        /* 다크 블루 네온 버튼 스타일 (양쪽 버튼 동일 적용) */
         .neon-btn {
             position: relative;
-            background: #111421; /* 더 어두운 남색 배경 */
-            color: #7dd3fc;    /* 차분한 하늘색 텍스트 */
-            border: 1px solid rgba(56, 189, 248, 0.4); /* 연한 블루 테두리 */
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.15), inset 0 0 5px rgba(56, 189, 248, 0.1); /* 은은한 내부외 글로우 */
+            background: #111421;
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.15), inset 0 0 5px rgba(56, 189, 248, 0.1);
             transition: all 0.2s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 700;
         }
-        
-        /* 호버 시 더 밝아지는 효과 */
         .neon-btn:hover {
             border-color: rgba(56, 189, 248, 0.8);
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.3), inset 0 0 8px rgba(56, 189, 248, 0.15);
         }
-        
-        /* 클릭 시 살짝 눌리는 효과 */
-        .neon-btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 0 8px rgba(56, 189, 248, 0.1), inset 0 0 4px rgba(56, 189, 248, 0.05);
-        }
-
+        .neon-btn:active { transform: translateY(1px); }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -51,20 +42,12 @@
                 <h3 class="text-white font-black text-lg tracking-tight">NOTICE GENERATOR</h3>
                 <p class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">San:Woori Official Template</p>
             </div>
-            <button class="text-gray-600 hover:text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
         </div>
 
         <div class="p-6 max-h-[75vh] overflow-y-auto space-y-4 custom-scrollbar">
             <div class="space-y-4">
                 <div>
-                    <div class="flex gap-2 mb-1.5 ml-1">
-                        <label class="w-[70%] text-[10px] font-black text-gray-500">🔴 산행지&픽업</label>
-                        <span class="w-[30%] text-[8px] font-bold text-gray-600 uppercase tracking-tighter">픽업 체크시 내용 변동</span>
-                    </div>
+                    <label class="text-[10px] font-black text-gray-500 ml-1 mb-1.5 block text-orange-400">🔴 산행지 (입력 후 바깥 클릭 시 데이터 자동 로드)</label>
                     <div class="flex items-center gap-2">
                         <input type="text" id="n_mt" placeholder="어디로 가나요?" 
                                class="w-[70%] bg-white/5 h-[40px] rounded-xl text-white text-sm px-4 focus:ring-1 ring-emerald-500/50 transition-all">
@@ -73,7 +56,7 @@
                             <input type="radio" name="n_pickup" id="p_ok" value="(픽업 가능)" class="hidden peer/ok">
                             <label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-lg text-[10px] font-black text-gray-400 cursor-pointer hover:bg-white/5 peer-checked/ok:bg-blue-600 peer-checked/ok:text-white transition-all">픽업</label>
                             
-                            <input type="radio" name="n_pickup" id="p_no" value="(픽업 불가)" class="hidden peer/no">
+                            <input type="radio" name="n_pickup" id="p_no" value="(픽업 불가)" class="hidden peer/no" checked>
                             <label for="p_no" class="flex-1 h-full flex items-center justify-center rounded-lg text-[10px] font-black text-gray-400 cursor-pointer hover:bg-white/5 peer-checked/no:bg-red-600 peer-checked/no:text-white transition-all">불가</label>
                         </div>
                     </div>
@@ -119,10 +102,8 @@
                 </div>
 
                 <div>
-                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스</label>
-                    <input type="text" id="n_course"
-                           placeholder='스페이스바 세번 누르면 " - " 생깁니다'
-                           class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스 (스페이스 2번 = ' - ')</label>
+                    <input type="text" id="n_course" placeholder='코스를 입력하세요' class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -151,15 +132,13 @@
                 </div>
             </div>
 
-            <button onclick="makeNoticeText()" 
-                    class="neon-btn w-full h-[56px] mt-6 rounded-2xl flex items-center justify-center gap-2">
-                <span class="font-black text-base text-sky-200">✨ 일정 생성하기</span>
+            <button id="btn_generate" class="neon-btn w-full h-[56px] mt-6 rounded-2xl flex items-center justify-center gap-2">
+                <span class="font-black text-base text-sky-200">✨ 일정 생성 & 자동저장</span>
             </button>
 
             <div id="n_result_box" class="hidden mt-6 p-5 bg-[#121422]/70 rounded-3xl border border-emerald-900/40 backdrop-blur-sm">
                 <p class="text-[10px] font-bold text-gray-600 mb-3 uppercase tracking-[0.2em] text-center">PREVIEW NOTICE</p>
                 <div id="n_final_text" class="text-xs text-gray-300 leading-relaxed whitespace-pre-wrap mb-5 bg-black/10 p-4 rounded-xl border border-white/5"></div>
-                
                 <button onclick="copyNoticeContent()" class="neon-btn w-full py-4 rounded-2xl text-sm font-black flex items-center justify-center gap-2">
                     📋 COPY TEXT
                 </button>
@@ -167,14 +146,53 @@
         </div>
     </div>
 
-    <script>
-        // 1. 일정 생성 로직 (기존 기능 그대로 유지)
-        window.makeNoticeText = () => {
-            const mt = document.getElementById('n_mt').value || '미정';
-            
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
+        // ✅ 사용자님께서 제공해주신 Firebase 설정값 적용 완료
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoAh3V3WrHg_wo53g1LHM0UW3-y6w2deg",
+            authDomain: "san-woori-db.firebaseapp.com",
+            projectId: "san-woori-db",
+            storageBucket: "san-woori-db.firebasestorage.app",
+            messagingSenderId: "387585514110",
+            appId: "1:387585514110:web:44749e6d92769fff6ad62f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- 기능 1. 산 이름 입력 시 데이터 자동 불러오기 ---
+        document.getElementById('n_mt').addEventListener('blur', async (e) => {
+            const mtName = e.target.value.trim();
+            if (!mtName || mtName === '미정') return;
+
+            try {
+                const docRef = doc(db, "mountains", mtName);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('n_meet').value = data.meet || '';
+                    document.getElementById('n_time_h').value = data.time_h || '';
+                    document.getElementById('n_time_m').value = data.time_m || '';
+                    document.getElementById('n_course').value = data.course || '';
+                    document.getElementById('n_dist').value = data.dist || '';
+                    document.getElementById('n_lv').value = data.lv || '하 (산책)';
+                    console.log("데이터 불러오기 완료:", mtName);
+                }
+            } catch (err) {
+                console.error("데이터 로드 실패:", err);
+            }
+        });
+
+        // --- 기능 2. 공지 생성 및 데이터 자동 저장 ---
+        window.makeNoticeText = async () => {
+            const mt = document.getElementById('n_mt').value.trim() || '미정';
             const pickupOption = document.querySelector('input[name="n_pickup"]:checked');
-            const isPickupEnabled = pickupOption && pickupOption.id === 'p_ok';
             const pickupTag = pickupOption ? pickupOption.value : "";
+            const isPickupEnabled = pickupOption && pickupOption.id === 'p_ok';
             
             const month = document.getElementById('n_month').value || '';
             const day = document.getElementById('n_day').value || '';
@@ -186,7 +204,6 @@
             const dateStr = month ? `${month}월 ${day}일 ${ampm} ${timeStr}` : '추후 공지';
             
             const meet = document.getElementById('n_meet').value || '추후 공지';
-
             const hourVal = document.getElementById('n_time_h').value;
             const minVal = document.getElementById('n_time_m').value;
             let time = hourVal ? `약 ${hourVal}시간${(minVal && minVal !== "0") ? ` ${minVal}분` : ""}` : "미정";
@@ -221,45 +238,57 @@
             document.getElementById('n_final_text').innerText = template;
             document.getElementById('n_result_box').classList.remove('hidden');
             
-            // 결과창이 자연스럽게 보이도록 살짝 스크롤
             setTimeout(() => {
                 document.getElementById('n_result_box').scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100);
+
+            // [DB 자동 저장]
+            if (mt !== '미정') {
+                try {
+                    await setDoc(doc(db, "mountains", mt), {
+                        meet: meet,
+                        time_h: hourVal,
+                        time_m: minVal,
+                        course: course,
+                        dist: distVal,
+                        lv: lv,
+                        updatedAt: new Date()
+                    }, { merge: true });
+                    console.log("DB 저장 완료:", mt);
+                } catch (err) {
+                    console.error("DB 저장 실패:", err);
+                }
+            }
         };
 
-        // 2. 복사 로직 (기존 기능 그대로 유지)
+        document.getElementById('btn_generate').addEventListener('click', window.makeNoticeText);
+    </script>
+
+    <script>
+        // 복사 기능 및 편의 UI 로직
         window.copyNoticeContent = () => {
             const text = document.getElementById('n_final_text').innerText;
             const textArea = document.createElement("textarea");
             textArea.value = text;
             document.body.appendChild(textArea);
             textArea.select();
-            try {
-                document.execCommand('copy');
-                alert("공지가 클립보드에 복사되었습니다! ✅");
-            } catch (err) {
-                alert("복사 실패. 직접 텍스트를 선택해 복사해주세요.");
-            }
+            document.execCommand('copy');
             document.body.removeChild(textArea);
+            alert("공지가 클립보드에 복사되었습니다! ✅");
         };
 
-        // 3. 하이픈 자동 변환 로직 (기존 기능 그대로 유지)
+        // 코스 입력 시 스페이스 2번을 ' - '로 변환
         document.addEventListener('DOMContentLoaded', () => {
             const courseInput = document.getElementById('n_course');
-            if (courseInput) {
-                courseInput.addEventListener('input', function(e) {
-                    const input = e.target;
-                    if (input.value.includes('  ')) {
-                        const newValue = input.value.replace(/  /g, ' - ');
-                        input.value = newValue;
-                        const lastHyphenIndex = newValue.lastIndexOf(' - ');
-                        if (lastHyphenIndex !== -1) {
-                            const newPos = lastHyphenIndex + 3;
-                            input.setSelectionRange(newPos, newPos);
-                        }
-                    }
-                });
-            }
+            courseInput.addEventListener('input', function(e) {
+                const input = e.target;
+                if (input.value.includes('  ')) {
+                    const newValue = input.value.replace(/  /g, ' - ');
+                    input.value = newValue;
+                    const pos = newValue.lastIndexOf(' - ') + 3;
+                    input.setSelectionRange(pos, pos);
+                }
+            });
         });
     </script>
 </body>
