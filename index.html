@@ -47,7 +47,10 @@
         <div class="p-6 max-h-[75vh] overflow-y-auto space-y-4 custom-scrollbar">
             <div class="space-y-4">
                 <div>
-                    <label class="text-[10px] font-black text-gray-500 ml-1 mb-1.5 block text-orange-400">🔴 산행지 (입력 후 바깥 클릭 시 데이터 자동 로드)</label>
+                    </div>
+                     <label class="w-[70%] text-[10px] font-black text-gray-500">🔴 산행지&픽업</label>
+                        <span class="w-[30%] text-[8px] font-bold text-gray-600 uppercase tracking-tighter">픽업 체크시 내용 변동</span>
+                    </div>
                     <div class="flex items-center gap-2">
                         <input type="text" id="n_mt" placeholder="어디로 가나요?" 
                                class="w-[70%] bg-white/5 h-[40px] rounded-xl text-white text-sm px-4 focus:ring-1 ring-emerald-500/50 transition-all">
@@ -56,7 +59,7 @@
                             <input type="radio" name="n_pickup" id="p_ok" value="(픽업 가능)" class="hidden peer/ok">
                             <label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-lg text-[10px] font-black text-gray-400 cursor-pointer hover:bg-white/5 peer-checked/ok:bg-blue-600 peer-checked/ok:text-white transition-all">픽업</label>
                             
-                            <input type="radio" name="n_pickup" id="p_no" value="(픽업 불가)" class="hidden peer/no" checked>
+                            <input type="radio" name="n_pickup" id="p_no" value="(픽업 불가)" class="hidden peer/no">
                             <label for="p_no" class="flex-1 h-full flex items-center justify-center rounded-lg text-[10px] font-black text-gray-400 cursor-pointer hover:bg-white/5 peer-checked/no:bg-red-600 peer-checked/no:text-white transition-all">불가</label>
                         </div>
                     </div>
@@ -102,8 +105,10 @@
                 </div>
 
                 <div>
-                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스 (스페이스 2번 = ' - ')</label>
-                    <input type="text" id="n_course" placeholder='코스를 입력하세요' class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스</label>
+                    <input type="text" id="n_course"
+                           placeholder='스페이스바 세번 누르면 " - " 생깁니다'
+                           class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -131,6 +136,7 @@
                     <input type="text" id="n_etc" value="물, 간식, 기타" class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
                 </div>
             </div>
+
 
             <button id="btn_generate" class="neon-btn w-full h-[56px] mt-6 rounded-2xl flex items-center justify-center gap-2">
                 <span class="font-black text-base text-sky-200">✨ 일정 생성 & 자동저장</span>
