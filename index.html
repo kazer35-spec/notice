@@ -17,6 +17,7 @@
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .neon-btn { background: #111421; color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 0 10px rgba(56, 189, 248, 0.15); transition: all 0.2s ease; font-weight: 700; }
         .neon-btn:hover { border-color: rgba(56, 189, 248, 0.8); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
+        /* 소요시간 가로 정렬 고정 */
         .duration-box { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 10px; }
         .duration-box span { font-size: 0.875rem; color: #6b7280; flex-shrink: 0; }
         .duration-box input { width: 100%; text-align: center; font-size: 0.875rem; font-weight: 700; color: white; }
@@ -37,9 +38,9 @@
 
         <div class="p-6 max-h-[75vh] overflow-y-auto space-y-4 custom-scrollbar">
             <div>
-                <label class="text-[10px] font-black text-orange-400 uppercase tracking-wider ml-1 mb-1.5 block">🔴 산행지 (자동완성 저장중)</label>
+                <label class="text-[10px] font-black text-orange-400 uppercase tracking-wider ml-1 mb-1.5 block">🔴 산행지</label>
                 <div class="flex items-center gap-2">
-                    <input type="text" id="n_mt" placeholder="어디로 가나요?" class="w-[45%] bg-white/5 h-[42px] rounded-xl text-white text-sm px-3 focus:ring-1 ring-emerald-500/50">
+                    <input type="text" id="n_mt" placeholder="산 이름 입력" class="w-[45%] bg-white/5 h-[42px] rounded-xl text-white text-sm px-3 focus:ring-1 ring-emerald-500/50">
                     <select id="official_mt_select" class="w-[30%] h-[42px] bg-slate-800 border border-white/10 rounded-xl text-white text-[10px] text-center font-bold px-1 appearance-none">
                         <option value="">인증 산 ⛰️</option>
                     </select>
@@ -82,8 +83,8 @@
                 </div>
             </div>
 
-            <div><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스 (스페이스 3번 = ' - ')</label><input type="text" id="n_course" placeholder='코스를 입력하세요' class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4"></div>
-            
+            <div><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스 (스페이스 2번 = ' - ')</label><input type="text" id="n_course" class="w-full bg-white/5 h-[42px] rounded-xl text-white text-sm px-4"></div>
+
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col"><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 거리</label><div class="flex items-center bg-white/5 rounded-xl pr-4 h-[42px]"><input type="text" id="n_dist" class="w-full text-white text-sm text-right px-2 font-bold"><span class="text-[10px] text-gray-600 font-black">km</span></div></div>
                 <div class="flex flex-col"><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 난이도</label><select id="n_lv" class="w-full h-[42px] bg-slate-800 px-3 rounded-xl text-white text-[11px] font-bold"><option value="하 (산책)">하 (산책)</option><option value="중하 (평범)">중하 (평범)</option><option value="중 (약간힘듦)">중 (약간힘듦)</option><option value="중상 (힘듦)">중상 (힘듦)</option><option value="상 (매우힘듦)">상 (매우힘듦)</option></select></div>
@@ -132,7 +133,7 @@
 
         let cachedMountains = [];
 
-        // 핵심 수정: 로컬 캐시 대신 항상 최신 데이터(정식+임시)를 결합하여 로드
+        // 핵심: mountains와 mountain_drafts 데이터를 실시간으로 병합하여 자동완성 소스로 사용
         const syncMountains = async () => {
             try {
                 const officialSnap = await getDocs(collection(db, "mountains"));
@@ -141,7 +142,6 @@
                 const draftSnap = await getDocs(collection(db, "mountain_drafts"));
                 const draftList = draftSnap.docs.map(d => ({ id: d.id, ...d.data(), type: 'draft' }));
 
-                // 정식 목록에 없는 정보만 임시 목록에서 보완하여 합침
                 const combined = [...officialList];
                 draftList.forEach(d => { if (!combined.find(c => c.id === d.id)) combined.push(d); });
 
@@ -152,7 +152,7 @@
 
         const renderSelectOptions = () => {
             const select = document.getElementById('official_mt_select');
-            select.innerHTML = '<option value=""> ⛰️산 선택 </option>';
+            select.innerHTML = '<option value="">인증 산 ⛰️</option>';
             cachedMountains.forEach(m => {
                 if(m.type === 'official' && m.meet && m.meet !== "추후 공지") {
                     const opt = document.createElement('option');
@@ -171,7 +171,7 @@
             document.getElementById('n_lv').value = d.lv || '하 (산책)';
         };
 
-        // 타이핑 시 mountain_drafts 데이터도 즉시 검색하여 채움
+        // 타이핑 즉시 mountain_drafts에 있는 데이터까지 검색하여 채움
         document.getElementById('n_mt').addEventListener('input', (e) => {
             const mtName = e.target.value.trim();
             const found = cachedMountains.find(m => m.id === mtName);
@@ -219,7 +219,7 @@
             if(snap.exists()) {
                 await setDoc(doc(db, "mountains", id), { ...snap.data(), isOfficial: true, updatedAt: serverTimestamp() }, { merge: true });
                 await deleteDoc(doc(db, "mountain_drafts", id));
-                alert("정식 등록 완료! ✅");
+                alert("반영 완료!");
                 await syncMountains(); 
                 loadDrafts();
             }
@@ -255,12 +255,11 @@
             document.getElementById('n_result_box').classList.remove('hidden');
             document.getElementById('n_result_box').scrollIntoView({ behavior: 'smooth' });
 
-            // 일정 생성 시 mountain_drafts에 자동 업데이트 및 동기화
             if(mt !== '미정') {
                 await setDoc(doc(db, "mountain_drafts", mt), {
                     meet, time_h: th, time_m: tm, course, dist: document.getElementById('n_dist').value, lv, updatedAt: serverTimestamp()
                 }, { merge: true });
-                await syncMountains(); 
+                await syncMountains(); // 생성 후 즉시 동기화하여 다음번 자동완성에 반영
             }
         };
 
