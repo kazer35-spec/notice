@@ -201,21 +201,30 @@
             document.getElementById('n_lv').value = d.lv || '하 (산책)';
         };
 
-        // 🔥 [수정됨] 클릭 시 초기화 로직 (한글 입력 방해 제거)
-        const inputIds = ['n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m'];
-        inputIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.addEventListener('click', (e) => {
-                    if (e.target.value !== "") e.target.value = ""; 
-                });
+        // 🔥 [수정] 산행지(n_mt)는 자동 삭제 대상에서 제외
+const inputIds = ['n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m'];
+
+inputIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        // 산행지 외의 필드만 클릭 시 비우기 기능 유지
+        el.addEventListener('click', function(e) {
+            if (this.value !== "") {
+                this.value = ""; 
             }
         });
+    }
+});
 
-        const mtInput = document.getElementById('n_mt');
-        mtInput.addEventListener('click', () => {
-            if(mtInput.value !== "") mtInput.value = "";
-        });
+// 🔴 산행지(n_mt) 입력창은 어떠한 자동 비우기 로직도 적용하지 않음
+// 이제 클릭해도 지워지지 않으므로 한글 입력이 끊기지 않습니다.
+const mtInput = document.getElementById('n_mt');
+if (mtInput) {
+    // 혹시 모를 브라우저의 한글 입력 간섭을 최소화하기 위해 속성만 보강
+    mtInput.setAttribute('autocomplete', 'off');
+    mtInput.setAttribute('spellcheck', 'false');
+}
+
 
         // 산 이름 입력 시 자동완성
         document.getElementById('n_mt').addEventListener('input', (e) => {
