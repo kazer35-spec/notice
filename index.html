@@ -340,10 +340,19 @@ if (mtInput) {
             }
         };
 
-        document.getElementById('btn_copy').onclick = () => {
-            navigator.clipboard.writeText(document.getElementById('n_final_text').innerText);
-            alert("복사되었습니다! ✅");
-        };
+        // [수정] 복사 버튼 클릭 시 alert 팝업 제거
+document.getElementById('btn_copy').onclick = () => {
+    const finalText = document.getElementById('n_final_text').innerText;
+    navigator.clipboard.writeText(finalText).then(() => {
+        // 성공 시 버튼 텍스트를 잠시 변경하여 복사되었음을 알림 (사용자 경험 유지)
+        const btn = document.getElementById('btn_copy');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "✅ Copied!";
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+        }, 1500);
+    });
+};
 
         syncMountains();
     </script>
