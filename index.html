@@ -20,7 +20,6 @@
         .neon-btn { background: #111421; color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 0 10px rgba(56, 189, 248, 0.15); transition: all 0.2s ease; font-weight: 700; }
         .neon-btn:hover { border-color: rgba(56, 189, 248, 0.8); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
         
-        /* 소요시간 가로 배치 스타일 */
         .duration-box { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 10px; }
         .duration-box span { font-size: 0.875rem; color: #6b7280; flex-shrink: 0; }
         .duration-box input { width: 100%; text-align: center; font-size: 0.875rem; font-weight: 700; color: white; }
@@ -87,10 +86,10 @@
                     </div>
                 </div>
             </div>
-<div><label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스 (스페이스 3번 = ' - ')</label><input type="text" id="n_course" placeholder='코스를 입력하세요' class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4"></div>
-            
             <div>
-
+                <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스 (스페이스 2번 = ' - ')</label>
+                <input type="text" id="n_course" placeholder='코스를 입력하세요' class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
+            </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col">
@@ -164,7 +163,7 @@
 
         let cachedMountains = [];
 
-        // 1. 데이터 실시간 동기화 (정식 + 임시 저장 데이터 병합)
+        // 1. 데이터 실시간 동기화
         const syncMountains = async () => {
             try {
                 const officialSnap = await getDocs(collection(db, "mountains"));
@@ -183,7 +182,7 @@
 
         const renderSelectOptions = () => {
             const select = document.getElementById('official_mt_select');
-            select.innerHTML = '<option value="">산 선택 ⛰️</option>';
+            select.innerHTML = '<option value="">인증 산 ⛰️</option>';
             cachedMountains.forEach(m => {
                 if(m.type === 'official' && m.meet && m.meet !== "추후 공지") {
                     const opt = document.createElement('option');
@@ -193,7 +192,6 @@
             });
         };
 
-        // 2. 데이터 자동 입력 함수
         const fillFields = (d) => {
             document.getElementById('n_meet').value = d.meet || '';
             document.getElementById('n_time_h').value = d.time_h || '';
@@ -203,30 +201,23 @@
             document.getElementById('n_lv').value = d.lv || '하 (산책)';
         };
 
-        // 🔥 3. 클릭(포커스) 시 입력 정보 자동 삭제 로직 (수정본)
-const in// 🔥 3. 클릭(포커스) 시 입력 정보 자동 삭제 로직 (한글 입력 방해 해결 버전)
-const inputIds = ['n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m'];
-inputIds.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-        // focus 대신 click 이벤트를 사용하여 IME(한글입력기) 충돌 최소화
-        el.addEventListener('click', (e) => {
-            if (e.target.value !== "") {
-                e.target.value = ""; 
+        // 🔥 [수정됨] 클릭 시 초기화 로직 (한글 입력 방해 제거)
+        const inputIds = ['n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m'];
+        inputIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('click', (e) => {
+                    if (e.target.value !== "") e.target.value = ""; 
+                });
             }
         });
-    }
-});
 
-// 산행지(n_mt) 입력란은 자동완성 기능과 충돌하지 않도록 별도 관리
-const mtInput = document.getElementById('n_mt');
-mtInput.addEventListener('click', () => {
-    // 값이 있을 때만 비우되, 포커스 시점과 입력 시점을 분리
-    if(mtInput.value !== "") mtInput.value = "";
-});
+        const mtInput = document.getElementById('n_mt');
+        mtInput.addEventListener('click', () => {
+            if(mtInput.value !== "") mtInput.value = "";
+        });
 
-
-        // 산 이름 입력 시 자동완성 (정식+임시 모두 검색)
+        // 산 이름 입력 시 자동완성
         document.getElementById('n_mt').addEventListener('input', (e) => {
             const mtName = e.target.value.trim();
             const found = cachedMountains.find(m => m.id === mtName);
@@ -241,12 +232,12 @@ mtInput.addEventListener('click', () => {
             if(found) fillFields(found);
         };
 
-        // 코스 입력 보조 (스페이스 2번 = 하이픈)
+        // 코스 입력 보조
         document.getElementById('n_course').oninput = (e) => {
             if(e.target.value.includes('  ')) e.target.value = e.target.value.replace(/  /g, ' - ');
         };
 
-        // 관리자 모달 및 권한 관리
+        // 관리자 관련 함수
         window.openAdminAuth = () => { document.getElementById('admin_modal').style.display = 'flex'; };
         window.closeAdminModal = () => { document.getElementById('admin_modal').style.display = 'none'; };
 
@@ -265,14 +256,11 @@ mtInput.addEventListener('click', () => {
             document.getElementById('draft_view').classList.remove('hidden');
             const list_el = document.getElementById('draft_list');
             const snap = await getDocs(collection(db, "mountain_drafts"));
-            
             list_el.innerHTML = snap.empty ? '<p class="text-center py-10 text-gray-600 text-[10px]">등록된 제안이 없습니다.</p>' : "";
-            
             snap.forEach(d => {
                 const div = document.createElement('div');
                 div.className = "bg-white/5 border border-white/5 p-3 rounded-2xl flex justify-between items-center mb-2";
-                div.innerHTML = `
-                    <div class="flex-1"><p class="text-xs font-bold text-white">${d.id}</p></div>
+                div.innerHTML = `<div class="flex-1"><p class="text-xs font-bold text-white">${d.id}</p></div>
                     <div class="flex gap-2">
                         <button onclick="approveMt('${d.id}')" class="bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">승인</button>
                         <button onclick="deleteDraft('${d.id}')" class="bg-red-600/20 text-red-400 border border-red-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">삭제</button>
@@ -287,7 +275,7 @@ mtInput.addEventListener('click', () => {
             if(snap.exists()) {
                 await setDoc(doc(db, "mountains", id), { ...snap.data(), isOfficial: true, updatedAt: serverTimestamp() }, { merge: true });
                 await deleteDoc(doc(db, "mountain_drafts", id));
-                alert("공식 산행지로 등록되었습니다! ✅");
+                alert("등록 완료! ✅");
                 await syncMountains(); 
                 loadDrafts();
             }
@@ -301,17 +289,14 @@ mtInput.addEventListener('click', () => {
             }
         };
 
-        // 공지 생성 및 데이터 저장
         document.getElementById('btn_generate').onclick = async () => {
             const mt = document.getElementById('n_mt').value.trim() || '미정';
             const pickupOpt = document.querySelector('input[name="n_pickup"]:checked');
             let pTag = ""; let pNotice = "";
-            
             if (pickupOpt) {
                 pTag = ` ${pickupOpt.value}`; 
                 if (pickupOpt.id === 'p_ok') pNotice = `\n💢일자, 시간, 장소 조율 가능합니다\n    차량 픽업 관련 문의 서브방에 입장해주세요`;
             }
-
             const m = document.getElementById('n_month').value; 
             const d = document.getElementById('n_day').value;
             const ampm = document.getElementById('n_ampm').value; 
@@ -320,7 +305,6 @@ mtInput.addEventListener('click', () => {
             const meet = document.getElementById('n_meet').value || '추후 공지';
             const th = document.getElementById('n_time_h').value; 
             const tm = document.getElementById('n_time_m').value;
-            
             const dur = th ? `약 ${th}시간${tm ? ` ${tm}분` : ""}` : "미정";
             const course = document.getElementById('n_course').value || '미정';
             const dist = document.getElementById('n_dist').value ? `${document.getElementById('n_dist').value}km` : '미정';
@@ -334,7 +318,6 @@ mtInput.addEventListener('click', () => {
             document.getElementById('n_result_box').classList.remove('hidden');
             document.getElementById('n_result_box').scrollIntoView({ behavior: 'smooth' });
 
-            // 임시 데이터로 자동 저장 (동기화 포함)
             if(mt !== '미정') {
                 await setDoc(doc(db, "mountain_drafts", mt), {
                     meet, time_h: th, time_m: tm, course, dist: document.getElementById('n_dist').value, lv, updatedAt: serverTimestamp()
@@ -345,10 +328,9 @@ mtInput.addEventListener('click', () => {
 
         document.getElementById('btn_copy').onclick = () => {
             navigator.clipboard.writeText(document.getElementById('n_final_text').innerText);
-            alert("공지 텍스트가 복사되었습니다! ✅");
+            alert("복사되었습니다! ✅");
         };
 
-        // 초기 실행
         syncMountains();
     </script>
 </body>
