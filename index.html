@@ -202,39 +202,32 @@
             document.getElementById('n_lv').value = d.lv || '하 (산책)';
         };
 
-        // 🔥 [수정] 한글 입력 방해 요소를 완전히 제거한 입력창 관리 로직
-const inputIds = ['n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m'];
+        // 1. 산행지(n_mt)를 제외한 나머지 입력창들 정의
+const otherInputIds = ['n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m'];
 
-inputIds.forEach(id => {
+otherInputIds.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-        // focus나 click 대신 'dbclick'(더블클릭) 시에만 비우거나, 
-        // 혹은 입력 시작 시점이 아닌 '값이 이미 있을 때 선택하면' 비우도록 변경
-        el.addEventListener('focus', (e) => {
-            // 한글 조합 중일 때는 아무것도 하지 않음 (중요!)
-            if (e.target.readOnly) return; 
-        });
-
-        // 사용자가 명확하게 '전체 삭제'를 원할 때만 비우도록 'mousedown' 활용
+        // 나머지 칸들은 클릭 시 기존 내용 삭제 (편의 기능)
         el.addEventListener('mousedown', function() {
             if(this.value !== "") {
-                // 약간의 여유를 두어 키보드가 올라온 뒤 처리
-                setTimeout(() => { this.value = ''; }, 100);
+                setTimeout(() => { this.value = ''; }, 10);
             }
         });
     }
 });
 
-// 🔴 산행지(n_mt) 입력란 최적화
+// 2. 🔴 산행지(n_mt) 입력창 완전 독립 (간섭 차단)
 const mtInput = document.getElementById('n_mt');
 if (mtInput) {
-    // 한글 입력기(IME)와 충돌을 피하기 위해 자동 비우기 기능을 최소화합니다.
-    mtInput.addEventListener('dblclick', () => {
-        mtInput.value = "";
-    });
+    // 기존의 모든 click, mousedown 이벤트를 무시하도록 설정
+    // 어떠한 자동 삭제 로직도 넣지 않아 한글 자판이 즉시 뜨게 합니다.
+    mtInput.onmousedown = null; 
+    mtInput.onclick = null;
     
-    // 입력 도중 값이 자꾸 사라지는 것을 방지하기 위해 
-    // input 이벤트 내 불필요한 DOM 조작이 있는지 확인하세요.
+    // 모바일에서 한글 자판을 우선적으로 부르기 위한 설정
+    mtInput.setAttribute('inputmode', 'text');
+    mtInput.setAttribute('autocomplete', 'one-time-code'); // 브라우저 자동완성 간섭 방지
 }
 
 
