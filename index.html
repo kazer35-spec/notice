@@ -79,12 +79,12 @@
                 <div class="flex flex-col">
                     <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟢 소요시간</label>
                     <div class="duration-box bg-white/5 h-[42px] rounded-xl">
-                        <span>약</span>
-                        <input type="text" id="n_time_h" placeholder="0">
-                        <span>시간</span>
-                        <input type="text" id="n_time_m" placeholder="00">
-                        <span>분</span>
-                    </div>
+    <span>약</span>
+    <input type="number" id="n_time_h" placeholder="0" inputmode="numeric">
+    <span>시간</span>
+    <input type="number" id="n_time_m" placeholder="00" inputmode="numeric">
+    <span>분</span>
+</div>
                 </div>
             </div>
             <div>
@@ -96,9 +96,9 @@
                 <div class="flex flex-col">
                     <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 거리</label>
                     <div class="flex items-center bg-white/5 rounded-xl pr-4 h-[42px]">
-                        <input type="text" id="n_dist" class="w-full text-white text-sm text-right px-2 font-bold">
-                        <span class="text-[10px] text-gray-600 font-black">km</span>
-                    </div>
+    <input type="number" id="n_dist" step="0.1" inputmode="decimal" class="w-full text-white text-sm text-right px-2 font-bold">
+    <span class="text-[10px] text-gray-600 font-black">km</span>
+</div>
                 </div>
                 <div class="flex flex-col">
                     <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 난이도</label>
