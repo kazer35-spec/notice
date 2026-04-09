@@ -204,20 +204,27 @@
         };
 
         // 🔥 3. 클릭(포커스) 시 입력 정보 자동 삭제 로직 (수정본)
+const in// 🔥 3. 클릭(포커스) 시 입력 정보 자동 삭제 로직 (한글 입력 방해 해결 버전)
 const inputIds = ['n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m'];
 inputIds.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-        el.addEventListener('focus', (e) => {
-            // 0.05초의 미세한 지연을 주어 모바일 브라우저의 키패드 충돌을 방지합니다.
-            setTimeout(() => {
-                if (e.target.value !== "") {
-                    e.target.value = ""; 
-                }
-            }, 50);
+        // focus 대신 click 이벤트를 사용하여 IME(한글입력기) 충돌 최소화
+        el.addEventListener('click', (e) => {
+            if (e.target.value !== "") {
+                e.target.value = ""; 
+            }
         });
     }
 });
+
+// 산행지(n_mt) 입력란은 자동완성 기능과 충돌하지 않도록 별도 관리
+const mtInput = document.getElementById('n_mt');
+mtInput.addEventListener('click', () => {
+    // 값이 있을 때만 비우되, 포커스 시점과 입력 시점을 분리
+    if(mtInput.value !== "") mtInput.value = "";
+});
+
 
         // 산 이름 입력 시 자동완성 (정식+임시 모두 검색)
         document.getElementById('n_mt').addEventListener('input', (e) => {
