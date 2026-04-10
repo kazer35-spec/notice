@@ -176,16 +176,28 @@
                 const combined = [...officialList];
                 draftList.forEach(d => { if (!combined.find(c => c.id === d.id)) combined.push(d); });
 
-                // --- 정렬 로직 시작 ---
+                                // --- 정렬 로직 시작 ---
                 combined.sort((a, b) => {
                     const isALink = a.id.includes("연계");
                     const isBLink = b.id.includes("연계");
+                    const isAAlong = a.id.includes("종주");
+                    const isBAlong = b.id.includes("종주");
 
-                    // Case 1: 하나는 연계고 하나는 일반이면, 연계(Link)를 뒤로 보냄
-                    if (isALink && !isBLink) return 1;
-                    if (!isALink && isBLink) return -1;
+                    // 1. 가중치(Priority) 설정: 일반(0) < 연계(1) < 종주(2)
+                    const getPriority = (id) => {
+                        if (id.includes("종주")) return 2;
+                        if (id.includes("연계")) return 1;
+                        return 0;
+                    };
 
-                    // Case 2: 둘 다 연계이거나 둘 다 일반이면, 그 안에서 ㄱ~ㅎ 오름차순 정렬
+                    const priorityA = getPriority(a.id);
+                    const priorityB = getPriority(b.id);
+
+                    if (priorityA !== priorityB) {
+                        return priorityA - priorityB; // 가중치가 높을수록 뒤로 보냄
+                    }
+
+                    // 2. 가중치가 같다면(둘 다 일반이거나, 둘 다 연계 등) 그 안에서 ㄱ~ㅎ 오름차순
                     return a.id.localeCompare(b.id, 'ko');
                 });
                 // --- 정렬 로직 끝 ---
