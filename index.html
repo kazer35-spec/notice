@@ -164,7 +164,7 @@
 
         let cachedMountains = [];
 
-        // 1. 데이터 실시간 동기화
+                // 1. 데이터 실시간 동기화 (연계산행 하단 정렬 로직 포함)
         const syncMountains = async () => {
             try {
                 const officialSnap = await getDocs(collection(db, "mountains"));
@@ -175,6 +175,20 @@
 
                 const combined = [...officialList];
                 draftList.forEach(d => { if (!combined.find(c => c.id === d.id)) combined.push(d); });
+
+                // --- 정렬 로직 시작 ---
+                combined.sort((a, b) => {
+                    const isALink = a.id.includes("연계");
+                    const isBLink = b.id.includes("연계");
+
+                    // Case 1: 하나는 연계고 하나는 일반이면, 연계(Link)를 뒤로 보냄
+                    if (isALink && !isBLink) return 1;
+                    if (!isALink && isBLink) return -1;
+
+                    // Case 2: 둘 다 연계이거나 둘 다 일반이면, 그 안에서 ㄱ~ㅎ 오름차순 정렬
+                    return a.id.localeCompare(b.id, 'ko');
+                });
+                // --- 정렬 로직 끝 ---
 
                 cachedMountains = combined;
                 renderSelectOptions();
