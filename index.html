@@ -228,38 +228,47 @@
             document.getElementById('n_lv').value = d.lv || '하 (산책)';
         };
 
-        // 1. 산행지(n_mt) 및 기타 입력창들에 대한 최적화된 입력 로직
-const allInputIds = ['n_mt', 'n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m'];
+        // 1. 즉시 삭제가 필요한 항목들 (소요시간, 거리)
+const clearImmediatelyIds = ['n_time_h', 'n_time_m', 'n_dist'];
 
-allInputIds.forEach(id => {
+clearImmediatelyIds.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-        // 1) 텍스트 입력 모드 강제 설정 (한글 자판 우선 호출)
-        el.setAttribute('inputmode', 'text');
-        
-        // 2) 클릭 시 기존 입력값 전체 선택 (지우지 않고 덮어쓰기 준비)
-        // 이 방식은 자판 호출을 방해하지 않으면서도 수정을 용이하게 합니다.
+        // 터치/클릭하자마자 즉시 비움 (한글 자판 영향 적은 숫자 위주 항목)
+        el.addEventListener('mousedown', function() {
+            this.value = '';
+        });
+    }
+});
+
+// 2. 한글 입력이 중요한 항목들 (산행지, 코스, 집결지, 준비물)
+const hangeulInputIds = ['n_mt', 'n_course', 'n_meet', 'n_etc'];
+
+hangeulInputIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        // 이 칸들은 자판 씹힘 방지를 위해 '전체 선택' 방식을 사용합니다.
+        // 처음 누르면 전체 선택되어 바로 쓰면 지워지고, 다시 누르면 오타 수정이 가능합니다.
         el.addEventListener('focus', function() {
             if (this.value !== "") {
-                // 모바일 브라우저 대응을 위해 아주 짧은 찰나 후에 전체 선택
                 setTimeout(() => {
                     this.setSelectionRange(0, this.value.length);
                 }, 10);
             }
         });
-
-        // 3) 한글 씹힘의 주범인 mousedown/click 내의 value='' 로직을 제거함
-        // 대신 사용자가 입력을 시작하면 자연스럽게 기존 내용이 대체됩니다.
+        
+        // 브라우저 자동완성 방해 제거
+        el.setAttribute('autocomplete', 'off');
     }
 });
 
-// 2. 🔴 산행지(n_mt) 특화 설정 (간섭 완전 제거)
-const mtInputFix = document.getElementById('n_mt');
-if (mtInputFix) {
-    mtInputFix.onmousedown = null;
-    mtInputFix.onclick = null;
-    // 브라우저의 자동완성 기능이 한글 자판을 가리는 것을 방지
-    mtInputFix.setAttribute('autocomplete', 'off'); 
+// 3. 🔴 산행지(n_mt) 한글 자판 최적화 (가장 민감한 부분)
+const mtInputFinal = document.getElementById('n_mt');
+if (mtInputFinal) {
+    // 모바일에서 한글 자판이 가장 우선적으로 올라오도록 설정
+    mtInputFinal.setAttribute('inputmode', 'text');
+    // 기존의 강제 삭제 로직이 있다면 완전히 제거
+    mtInputFinal.onmousedown = null; 
 }
 
         // 산 이름 입력 시 자동완성
