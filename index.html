@@ -228,41 +228,39 @@
             document.getElementById('n_lv').value = d.lv || '하 (산책)';
         };
 
-        // 1. 산행지(n_mt)를 제외한 나머지 입력창들 정의
-const otherInputIds = ['n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m'];
+        // 1. 산행지(n_mt) 및 기타 입력창들에 대한 최적화된 입력 로직
+const allInputIds = ['n_mt', 'n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m'];
 
-otherInputIds.forEach(id => {
+allInputIds.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-        // [수정] 포커스가 없는 상태에서 처음 클릭(mousedown)할 때만 삭제 로직 실행
-        el.addEventListener('mousedown', function(e) {
-            // 현재 활성화된 요소가 내가 클릭한 요소가 아닐 때(즉, 처음 들어갈 때)만 삭제
-            if (document.activeElement !== this && this.value !== "") {
-                // 즉시 삭제하면 붙여넣기 등이 꼬일 수 있으므로 아주 짧은 지연 후 비움
-                setTimeout(() => { 
-                    // 클릭 후 포커스가 잡힌 상태에서 다시 한번 확인 (사용자 경험 보정)
-                    if (document.activeElement === this) {
-                        this.value = ''; 
-                    }
+        // 1) 텍스트 입력 모드 강제 설정 (한글 자판 우선 호출)
+        el.setAttribute('inputmode', 'text');
+        
+        // 2) 클릭 시 기존 입력값 전체 선택 (지우지 않고 덮어쓰기 준비)
+        // 이 방식은 자판 호출을 방해하지 않으면서도 수정을 용이하게 합니다.
+        el.addEventListener('focus', function() {
+            if (this.value !== "") {
+                // 모바일 브라우저 대응을 위해 아주 짧은 찰나 후에 전체 선택
+                setTimeout(() => {
+                    this.setSelectionRange(0, this.value.length);
                 }, 10);
             }
         });
+
+        // 3) 한글 씹힘의 주범인 mousedown/click 내의 value='' 로직을 제거함
+        // 대신 사용자가 입력을 시작하면 자연스럽게 기존 내용이 대체됩니다.
     }
 });
 
-// 2. 🔴 산행지(n_mt) 입력창 완전 독립 (간섭 차단)
-const mtInput = document.getElementById('n_mt');
-if (mtInput) {
-    // 기존의 모든 click, mousedown 이벤트를 무시하도록 설정
-    // 어떠한 자동 삭제 로직도 넣지 않아 한글 자판이 즉시 뜨게 합니다.
-    mtInput.onmousedown = null; 
-    mtInput.onclick = null;
-    
-    // 모바일에서 한글 자판을 우선적으로 부르기 위한 설정
-    mtInput.setAttribute('inputmode', 'text');
-    mtInput.setAttribute('autocomplete', 'one-time-code'); // 브라우저 자동완성 간섭 방지
+// 2. 🔴 산행지(n_mt) 특화 설정 (간섭 완전 제거)
+const mtInputFix = document.getElementById('n_mt');
+if (mtInputFix) {
+    mtInputFix.onmousedown = null;
+    mtInputFix.onclick = null;
+    // 브라우저의 자동완성 기능이 한글 자판을 가리는 것을 방지
+    mtInputFix.setAttribute('autocomplete', 'off'); 
 }
-
 
         // 산 이름 입력 시 자동완성
         document.getElementById('n_mt').addEventListener('input', (e) => {
