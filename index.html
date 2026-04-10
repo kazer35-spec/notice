@@ -234,10 +234,17 @@ const otherInputIds = ['n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m'];
 otherInputIds.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-        // 나머지 칸들은 클릭 시 기존 내용 삭제 (편의 기능)
-        el.addEventListener('mousedown', function() {
-            if(this.value !== "") {
-                setTimeout(() => { this.value = ''; }, 10);
+        // [수정] 포커스가 없는 상태에서 처음 클릭(mousedown)할 때만 삭제 로직 실행
+        el.addEventListener('mousedown', function(e) {
+            // 현재 활성화된 요소가 내가 클릭한 요소가 아닐 때(즉, 처음 들어갈 때)만 삭제
+            if (document.activeElement !== this && this.value !== "") {
+                // 즉시 삭제하면 붙여넣기 등이 꼬일 수 있으므로 아주 짧은 지연 후 비움
+                setTimeout(() => { 
+                    // 클릭 후 포커스가 잡힌 상태에서 다시 한번 확인 (사용자 경험 보정)
+                    if (document.activeElement === this) {
+                        this.value = ''; 
+                    }
+                }, 10);
             }
         });
     }
