@@ -211,18 +211,27 @@
     }
 };
 
-        const renderSelectOptions = () => {
-    const select = document.getElementById('official_mt_select');
-    const favs = getFavorites(); // 즐겨찾기 목록 로드
+        // 1. 최상단에 변수 및 기초 함수 선언
+let cachedMountains = [];
 
-    // 1. 데이터 분류
+// 즐겨찾기 목록 가져오기 함수 (순서상 위로 올림)
+const getFavorites = () => JSON.parse(localStorage.getItem('my_favorites') || '[]');
+
+// 2. 리스트 렌더링 함수
+const renderSelectOptions = () => {
+    const select = document.getElementById('official_mt_select');
+    if (!select) return;
+
+    const favs = getFavorites(); 
+
+    // 데이터 분류
     const favoriteItems = cachedMountains.filter(m => favs.includes(m.id));
     const normalItems = cachedMountains.filter(m => !favs.includes(m.id));
 
-    // 2. 셀렉트 박스 초기화
+    // 셀렉트 박스 초기화
     select.innerHTML = '<option value="">인증 산 ⛰️</option>';
 
-    // 3. 즐겨찾기 그룹 추가 (구분선 역할의 disabled option 추가 가능)
+    // 즐겨찾기 그룹 추가
     if (favoriteItems.length > 0) {
         const groupLabel = document.createElement('option');
         groupLabel.textContent = "--- 즐겨찾기 ⭐ ---";
@@ -232,7 +241,7 @@
         favoriteItems.forEach(m => {
             const opt = document.createElement('option');
             opt.value = m.id;
-            opt.innerText = `⭐ ${m.id}`; // 별표 표시
+            opt.innerText = `⭐ ${m.id}`;
             select.appendChild(opt);
         });
 
@@ -242,7 +251,7 @@
         select.appendChild(line);
     }
 
-    // 4. 나머지 산 추가
+    // 일반 항목 추가 (기존 정렬 유지된 상태)
     normalItems.forEach(m => {
         if(m.type === 'official' && m.meet && m.meet !== "추후 공지") {
             const opt = document.createElement('option');
@@ -252,6 +261,63 @@
         }
     });
 };
+
+// 3. 데이터 동기화 함수
+const syncMountains = async () => {
+    try {
+        const cachedData = localStorage.getItem('mt_cache');
+        if (cachedData) {
+            cachedMountains = JSON.parse(cachedData);
+            renderSelectOptions(); // 여기서 호출됨
+            return;
+        }
+
+        const officialSnap = await getDocs(collection(db, "mountains"));
+        const officialList = officialSnap.docs.map(d => ({ id: d.id, ...d.data(), type: 'official' }));
+        
+        const draftSnap = await getDocs(collection(db, "mountain_drafts"));
+        const draftList = draftSnap.docs.map(d => ({ id: d.id, ...d.data(), type: 'draft' }));
+
+        const combined = [...officialList];
+        draftList.forEach(d => { if (!combined.find(c => c.id === d.id)) combined.push(d); });
+
+        // 정렬: 일반(0) -> 연계(1) -> 종주(2) 순
+        combined.sort((a, b) => {
+            const getPriority = (id) => {
+                if (id.includes("종주")) return 2;
+                if (id.includes("연계")) return 1;
+                return 0;
+            };
+            const priorityA = getPriority(a.id);
+            const priorityB = getPriority(b.id);
+            if (priorityA !== priorityB) return priorityA - priorityB;
+            return a.id.localeCompare(b.id, 'ko');
+        });
+
+        cachedMountains = combined;
+        localStorage.setItem('mt_cache', JSON.stringify(combined));
+        renderSelectOptions();
+    } catch (e) { 
+        console.error("Sync Error:", e); 
+    }
+};
+
+// 4. 나머지 이벤트 리스너 및 실행 (기존 코드 유지)
+syncMountains();
+
+// 즐겨찾기 토글 함수는 전역(window)으로 등록
+window.toggleFavorite = (mtName, event) => {
+    if(event) event.stopPropagation();
+    let favs = getFavorites();
+    if (favs.includes(mtName)) {
+        favs = favs.filter(id => id !== mtName);
+    } else {
+        favs.push(mtName);
+    }
+    localStorage.setItem('my_favorites', JSON.stringify(favs));
+    renderSelectOptions(); 
+};
+
 
 
         const fillFields = (d) => {
@@ -465,21 +531,6 @@ document.getElementById('btn_copy').onclick = () => {
 
         syncMountains();
 
-        // 즐겨찾기 목록 가져오기
-const getFavorites = () => JSON.parse(localStorage.getItem('my_favorites') || '[]');
-
-// 즐겨찾기 토글 (추가/삭제)
-window.toggleFavorite = (mtName, event) => {
-    event.stopPropagation(); // 셀렉트 박스나 리스트 클릭 이벤트 전파 방지
-    let favs = getFavorites();
-    if (favs.includes(mtName)) {
-        favs = favs.filter(id => id !== mtName);
-    } else {
-        favs.push(mtName);
-    }
-    localStorage.setItem('my_favorites', JSON.stringify(favs));
-    renderSelectOptions(); // 리스트 다시 그리기
-};
 
     </script>
 </body>
