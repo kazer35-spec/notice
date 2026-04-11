@@ -228,38 +228,55 @@
             document.getElementById('n_lv').value = d.lv || '하 (산책)';
         };
 
-        // 1. 모든 입력창 최적화 로직
+        // 모든 입력창 ID 리스트
 const allInputIds = ['n_mt', 'n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m', 'n_etc'];
 
 allInputIds.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
 
-    // 공통 속성 설정 (자판 간섭 최소화)
     el.setAttribute('autocomplete', 'off');
     el.setAttribute('spellcheck', 'false');
 
-    // [수정] 산행지(n_mt)와 준비물(n_etc)은 블록(select) 로직에서 제외
+    // [수정] 산행지(n_mt)와 준비물(n_etc)은 블록 로직에서 완전 제외
     if (id !== 'n_mt' && id !== 'n_etc') {
-        el.onclick = function() {
-            if (this.value !== "" && document.activeElement === this) {
-                this.select();
+        
+        // 1. 처음 포커스를 받을 때만 전체 선택 (블록)
+        el.addEventListener('focus', function() {
+            if (this.value !== "") {
+                // 모바일 브라우저의 기본 동작과 충돌을 피하기 위해 찰나의 지연을 줌
+                setTimeout(() => {
+                    if (document.activeElement === this) {
+                        this.select();
+                        this.setSelectionRange(0, this.value.length);
+                    }
+                }, 10);
             }
-        };
+        });
+
+        // 2. 이미 포커스가 있는 상태에서 또 누르면 블록 해제 (부분 수정 가능)
+        el.addEventListener('mousedown', function(e) {
+            if (document.activeElement === this) {
+                // 이미 포커스가 있으므로 select()를 실행하지 않음 (브라우저 기본 커서 동작 허용)
+                // 이벤트 전파를 막지 않아 사용자가 원하는 위치에 커서를 찍을 수 있음
+            }
+        });
+
     } else {
-        // 산행지와 준비물은 클릭 시 블록을 잡지 않고 일반 입력 모드 유지
-        el.onclick = null;
+        // 산행지와 준비물은 일반적인 입력 방식 유지
+        el.onfocus = null;
+        el.onmousedown = null;
     }
 
-    // 입력 모드 최적화
+    // 입력 모드 설정
     if (['n_dist', 'n_time_h', 'n_time_m'].includes(id)) {
-        el.setAttribute('inputmode', 'decimal'); // 숫자 키보드
+        el.setAttribute('inputmode', 'decimal');
     } else {
-        el.setAttribute('inputmode', 'text'); // 한글 키보드
+        el.setAttribute('inputmode', 'text');
     }
 });
 
-// 2. 인증산 셀렉트 박스 연동 (리스트 선택 문제 해결)
+// 인증산 셀렉트 박스 연동 (리스트 선택 시 n_mt에 값 입력)
 const officialSelect = document.getElementById('official_mt_select');
 if (officialSelect) {
     officialSelect.onchange = (e) => {
@@ -271,7 +288,6 @@ if (officialSelect) {
 
         const found = cachedMountains.find(m => m.id === mtName);
         if (found) {
-            // 필드 채우기
             document.getElementById('n_meet').value = found.meet || '';
             document.getElementById('n_time_h').value = found.time_h || '';
             document.getElementById('n_time_m').value = found.time_m || '';
@@ -279,9 +295,7 @@ if (officialSelect) {
             document.getElementById('n_dist').value = found.dist || '';
             document.getElementById('n_lv').value = found.lv || '하 (산책)';
         }
-        
-        // 선택 후 포커스를 빼서 불필요한 자판 꼬임 방지
-        n_mt.blur();
+        n_mt.blur(); 
     };
 }
 
