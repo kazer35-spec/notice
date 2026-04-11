@@ -463,6 +463,55 @@ if (ampmBtn) {
     };
 }
 
+         // 자동 포커스 이동 로직
+const setupAutoTab = () => {
+    const nMonth = document.getElementById('n_month');
+    const nDay = document.getElementById('n_day');
+    const nHour = document.getElementById('n_hour');
+    const nMin = document.getElementById('n_min');
+
+    let monthTimer, hourTimer;
+
+    // [1] 월 -> 일 이동
+    nMonth.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (!val) return;
+
+        clearTimeout(monthTimer);
+        // 1, 10, 11, 12인 경우 2초 대기
+        if (['1', '10', '11', '12'].includes(val)) {
+            monthTimer = setTimeout(() => {
+                if(nMonth.value === val) nDay.focus();
+            }, 2000);
+        } 
+        // 2~9인 경우 즉시 이동
+        else if (parseInt(val) >= 2 && parseInt(val) <= 9) {
+            nDay.focus();
+        }
+    });
+
+    // [2] 시 -> 분 이동
+    nHour.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (!val) return;
+
+        clearTimeout(hourTimer);
+        // 1, 10, 11, 12인 경우 2초 대기
+        if (['1', '10', '11', '12'].includes(val)) {
+            hourTimer = setTimeout(() => {
+                if(nHour.value === val) nMin.focus();
+            }, 2000);
+        } 
+        // 2~9인 경우 즉시 이동
+        else if (parseInt(val) >= 2 && parseInt(val) <= 9) {
+            nMin.focus();
+        }
+    });
+};
+
+// 실행
+setupAutoTab();
+
 </script>
  </body>
 </html>
