@@ -212,16 +212,47 @@
 };
 
         const renderSelectOptions = () => {
-            const select = document.getElementById('official_mt_select');
-            select.innerHTML = '<option value="">인증 산 ⛰️</option>';
-            cachedMountains.forEach(m => {
-                if(m.type === 'official' && m.meet && m.meet !== "추후 공지") {
-                    const opt = document.createElement('option');
-                    opt.value = m.id; opt.innerText = m.id;
-                    select.appendChild(opt);
-                }
-            });
-        };
+    const select = document.getElementById('official_mt_select');
+    const favs = getFavorites(); // 즐겨찾기 목록 로드
+
+    // 1. 데이터 분류
+    const favoriteItems = cachedMountains.filter(m => favs.includes(m.id));
+    const normalItems = cachedMountains.filter(m => !favs.includes(m.id));
+
+    // 2. 셀렉트 박스 초기화
+    select.innerHTML = '<option value="">인증 산 ⛰️</option>';
+
+    // 3. 즐겨찾기 그룹 추가 (구분선 역할의 disabled option 추가 가능)
+    if (favoriteItems.length > 0) {
+        const groupLabel = document.createElement('option');
+        groupLabel.textContent = "--- 즐겨찾기 ⭐ ---";
+        groupLabel.disabled = true;
+        select.appendChild(groupLabel);
+
+        favoriteItems.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.id;
+            opt.innerText = `⭐ ${m.id}`; // 별표 표시
+            select.appendChild(opt);
+        });
+
+        const line = document.createElement('option');
+        line.textContent = "------------------";
+        line.disabled = true;
+        select.appendChild(line);
+    }
+
+    // 4. 나머지 산 추가
+    normalItems.forEach(m => {
+        if(m.type === 'official' && m.meet && m.meet !== "추후 공지") {
+            const opt = document.createElement('option');
+            opt.value = m.id;
+            opt.innerText = m.id;
+            select.appendChild(opt);
+        }
+    });
+};
+
 
         const fillFields = (d) => {
             document.getElementById('n_meet').value = d.meet || '';
@@ -433,6 +464,23 @@ document.getElementById('btn_copy').onclick = () => {
 };
 
         syncMountains();
+
+        // 즐겨찾기 목록 가져오기
+const getFavorites = () => JSON.parse(localStorage.getItem('my_favorites') || '[]');
+
+// 즐겨찾기 토글 (추가/삭제)
+window.toggleFavorite = (mtName, event) => {
+    event.stopPropagation(); // 셀렉트 박스나 리스트 클릭 이벤트 전파 방지
+    let favs = getFavorites();
+    if (favs.includes(mtName)) {
+        favs = favs.filter(id => id !== mtName);
+    } else {
+        favs.push(mtName);
+    }
+    localStorage.setItem('my_favorites', JSON.stringify(favs));
+    renderSelectOptions(); // 리스트 다시 그리기
+};
+
     </script>
 </body>
 </html>
