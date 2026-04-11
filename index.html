@@ -166,20 +166,19 @@
 
                 const syncMountains = async () => {
     try {
-        // 1. 로컬 스토리지 확인 (캐싱 로직)
+        // 1. 로컬 스토리지에 데이터가 있는지 확인
         const cachedData = localStorage.getItem('mt_cache');
-        const cacheTime = localStorage.getItem('mt_cache_time');
         
-        // 캐시가 있고 1시간(3,600,000ms)이 안 지났다면 DB 호출 없이 종료
-        if (cachedData && cacheTime && (Date.now() - cacheTime < 3600000)) {
+        // 데이터가 이미 있다면 DB 호출 없이 즉시 리턴
+        if (cachedData) {
             cachedMountains = JSON.parse(cachedData);
             renderSelectOptions();
-            console.log("🚀 캐시된 데이터를 사용합니다.");
+            console.log("🚀 캐시된 데이터를 사용 중입니다. (DB 호출 없음)");
             return;
         }
 
-        // 2. 캐시가 없거나 오래된 경우만 DB 호출 (읽기 발생)
-        console.log("📡 DB에서 새 데이터를 가져옵니다.");
+        // 2. 캐시가 비어 있을 때만 DB에서 가져옴 (최초 1회 또는 관리자 업데이트 후)
+        console.log("📡 DB에서 최신 목록을 불러옵니다.");
         const officialSnap = await getDocs(collection(db, "mountains"));
         const officialList = officialSnap.docs.map(d => ({ id: d.id, ...d.data(), type: 'official' }));
         
@@ -205,13 +204,13 @@
         // 3. 결과 저장 및 로컬 스토리지 업데이트
         cachedMountains = combined;
         localStorage.setItem('mt_cache', JSON.stringify(combined));
-        localStorage.setItem('mt_cache_time', Date.now().toString());
         
         renderSelectOptions();
     } catch (e) { 
         console.error("Sync Error:", e); 
     }
 };
+
         const renderSelectOptions = () => {
             const select = document.getElementById('official_mt_select');
             select.innerHTML = '<option value="">인증 산 ⛰️</option>';
