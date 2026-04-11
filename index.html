@@ -296,6 +296,7 @@
         document.getElementById('n_mt').addEventListener('input', (e) => {
             const found = cachedMountains.find(m => m.id === e.target.value.trim());
             if(found) fillFields(found);
+            updateFavIcon();
         });
 
         document.getElementById('n_course').oninput = (e) => {
@@ -361,7 +362,7 @@
         });
     };
 
-    // [7] 관리자 기능 상세 로직
+    // [7] 관리자 기능
     document.getElementById('btn_auth_submit').onclick = async () => {
         const pw = document.getElementById('admin_input_pw').value;
         const config = await getDoc(doc(db, "admin_settings", "config"));
@@ -408,132 +409,85 @@
         }
     };
 
+    // 별 아이콘 상태 업데이트
+    const updateFavIcon = () => {
+        const mtName = document.getElementById('n_mt').value.trim();
+        const icon = document.getElementById('fav_icon');
+        const favs = getFavorites();
+        if (mtName && mtName !== '미정' && favs.includes(mtName)) {
+            icon.style.color = "#fbbf24"; 
+            icon.style.fontVariationSettings = "'FILL' 1, 'wght' 400";
+        } else {
+            icon.style.color = "#6b7280";
+            icon.style.fontVariationSettings = "'FILL' 0, 'wght' 400";
+        }
+    };
+
+    // 오전/오후 토글
+    const setupAMPM = () => {
+        const ampmBtn = document.getElementById('btn_ampm_toggle');
+        const ampmTxt = document.getElementById('txt_ampm');
+        const ampmInput = document.getElementById('n_ampm');
+        if (ampmBtn) {
+            ampmBtn.onclick = () => {
+                if (ampmInput.value === "오전") {
+                    ampmInput.value = "오후";
+                    ampmTxt.innerText = "오후";
+                    ampmTxt.style.color = "#fb923c";
+                } else {
+                    ampmInput.value = "오전";
+                    ampmTxt.innerText = "오전";
+                    ampmTxt.style.color = "#ffffff";
+                }
+            };
+        }
+    };
+
+    // 자동 포커스 이동 (통합 버전)
+    const setupAutoTab = () => {
+        const config = [
+            { curr: 'n_month', next: 'n_day', wait: ['1', '10', '11', '12'], key: 'm' },
+            { curr: 'n_hour', next: 'n_min', wait: ['1', '10', '11', '12'], key: 'h' },
+            { curr: 'n_time_h', next: 'n_time_m', wait: ['1'], key: 'th' }
+        ];
+        const timers = {};
+
+        config.forEach(item => {
+            const cEl = document.getElementById(item.curr);
+            const nEl = document.getElementById(item.next);
+            if(!cEl || !nEl) return;
+
+            cEl.addEventListener('input', (e) => {
+                const val = e.target.value;
+                if(!val) return;
+                clearTimeout(timers[item.key]);
+
+                const isWait = item.wait.includes(val) || (item.curr === 'n_time_h' && parseInt(val) >= 10);
+                if (isWait) {
+                    timers[item.key] = setTimeout(() => { if(cEl.value === val) nEl.focus(); }, 2000);
+                } else if (parseInt(val) >= 2 && parseInt(val) <= 9) {
+                    nEl.focus();
+                }
+            });
+        });
+    };
+
     // [8] 초기 실행
     initInputs();
     syncMountains();
+    setupAMPM();
+    setupAutoTab();
 
-         // 별 상태 업데이트 (FILL 속성 포함)
-const updateFavIcon = () => {
-    const mtName = document.getElementById('n_mt').value.trim();
-    const icon = document.getElementById('fav_icon');
-    const favs = getFavorites();
-    
-    if (mtName && mtName !== '미정' && favs.includes(mtName)) {
-        icon.style.color = "#fbbf24"; // 노란색
-        icon.style.fontVariationSettings = "'FILL' 1, 'wght' 400"; // 별 채우기
-    } else {
-        icon.style.color = "#6b7280"; // 기본 회색
-        icon.style.fontVariationSettings = "'FILL' 0, 'wght' 400"; // 빈 별
-    }
-};
-
-// 클릭 시 토글 및 리스트 갱신
-document.getElementById('btn_fav_toggle').onclick = (e) => {
-    e.preventDefault(); // 폼 제출 방지
-    const mtName = document.getElementById('n_mt').value.trim();
-    if (!mtName || mtName === '미정') return;
-    
-    // 기존에 선언된 toggleFavorite 호출
-    window.toggleFavorite(mtName);
-    updateFavIcon();
-};
-
-// 입력창 및 셀렉트 박스 연동
-document.getElementById('n_mt').addEventListener('input', updateFavIcon);
-document.getElementById('official_mt_select').addEventListener('change', () => {
-    setTimeout(updateFavIcon, 100); 
-});
-
-         // 오전/오후 토글 버튼 제어
-const ampmBtn = document.getElementById('btn_ampm_toggle');
-const ampmTxt = document.getElementById('txt_ampm');
-const ampmInput = document.getElementById('n_ampm');
-
-if (ampmBtn) {
-    ampmBtn.onclick = () => {
-        if (ampmInput.value === "오전") {
-            ampmInput.value = "오후";
-            ampmTxt.innerText = "오후";
-            ampmTxt.style.color = "#fb923c"; // 오후일 때 오렌지색으로 강조
-        } else {
-            ampmInput.value = "오전";
-            ampmTxt.innerText = "오전";
-            ampmTxt.style.color = "#ffffff";
-        }
+    document.getElementById('btn_fav_toggle').onclick = () => {
+        const mtName = document.getElementById('n_mt').value.trim();
+        if (!mtName || mtName === '미정') return;
+        window.toggleFavorite(mtName);
+        updateFavIcon();
     };
-}
 
-         // 자동 포커스 이동 로직
-const setupAutoTab = () => {
-    const nMonth = document.getElementById('n_month');
-    const nDay = document.getElementById('n_day');
-    const nHour = document.getElementById('n_hour');
-    const nMin = document.getElementById('n_min');
-
-    let monthTimer, hourTimer;
-
-    // [1] 월 -> 일 이동
-    nMonth.addEventListener('input', (e) => {
-        const val = e.target.value;
-        if (!val) return;
-
-        clearTimeout(monthTimer);
-        // 1, 10, 11, 12인 경우 2초 대기
-        if (['1', '10', '11', '12'].includes(val)) {
-            monthTimer = setTimeout(() => {
-                if(nMonth.value === val) nDay.focus();
-            }, 2000);
-        } 
-        // 2~9인 경우 즉시 이동
-        else if (parseInt(val) >= 2 && parseInt(val) <= 9) {
-            nDay.focus();
-        }
+    document.getElementById('official_mt_select').addEventListener('change', () => {
+        setTimeout(updateFavIcon, 100); 
     });
-
-    // [2] 시 -> 분 이동
-    nHour.addEventListener('input', (e) => {
-        const val = e.target.value;
-        if (!val) return;
-
-        clearTimeout(hourTimer);
-        // 1, 10, 11, 12인 경우 2초 대기
-        if (['1', '10', '11', '12'].includes(val)) {
-            hourTimer = setTimeout(() => {
-                if(nHour.value === val) nMin.focus();
-            }, 2000);
-        } 
-        // 2~9인 경우 즉시 이동
-        else if (parseInt(val) >= 2 && parseInt(val) <= 9) {
-            nMin.focus();
-
-            // [3] 소요시간(시) -> 소요시간(분) 이동
-const nTimeH = document.getElementById('n_time_h');
-const nTimeM = document.getElementById('n_time_m');
-let durationTimer;
-
-nTimeH.addEventListener('input', (e) => {
-    const val = e.target.value;
-    if (!val) return;
-
-    clearTimeout(durationTimer);
-
-    // 1, 10~24 등 추가 입력이 가능성이 있는 숫자는 2초 대기
-    // (산행 소요시간 특성상 10시간 이상이 가능하므로 범위를 넓게 잡았습니다)
-    if (val === '1' || (parseInt(val) >= 10 && parseInt(val) <= 24)) {
-        durationTimer = setTimeout(() => {
-            if(nTimeH.value === val) nTimeM.focus();
-        }, 2000);
-    } 
-    // 2~9 사이의 숫자는 입력 즉시 '분'으로 이동
-    else if (parseInt(val) >= 2 && parseInt(val) <= 9) {
-        nTimeM.focus();
-    }
-});
-};
-
-// 실행
-setupAutoTab();
-
 </script>
  </body>
 </html>
