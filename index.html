@@ -42,15 +42,20 @@
             <div>
     <label class="text-[10px] font-black text-orange-400 uppercase tracking-wider ml-1 mb-1.5 block">🔴 산행지 (자동완성 저장중)</label>
     <div class="flex items-center gap-2">
-        <div class="relative w-[45%] flex items-center">
-            <input type="text" id="n_mt" placeholder="어디로?" autocomplete="off" class="w-full bg-white/5 h-[42px] rounded-xl text-white text-sm pl-3 pr-9 focus:ring-1 ring-emerald-500/50">
-            <button id="btn_fav_toggle" class="absolute right-2 text-gray-500 hover:text-yellow-400 transition-colors">
-                <span class="material-symbols-outlined text-[20px]" id="fav_icon">star</span>
+        <div class="relative w-[45%] flex items-center h-[42px]"> <input type="text" id="n_mt" placeholder="어디로 가나요?" autocomplete="off" 
+                class="w-full bg-white/5 h-full rounded-xl text-white text-sm pl-3 pr-9 focus:ring-1 ring-emerald-500/50">
+            
+            <button id="btn_fav_toggle" type="button" 
+                class="absolute right-2 h-full flex items-center justify-center text-gray-500 hover:text-yellow-400 transition-colors" 
+                style="width: 30px;">
+                <span class="material-symbols-outlined text-[20px] select-none" id="fav_icon" style="font-variation-settings: 'FILL' 0, 'wght' 400;">star</span>
             </button>
         </div>
+        
         <select id="official_mt_select" class="w-[30%] h-[42px] bg-slate-800 border border-white/10 rounded-xl text-white text-[10px] text-center font-bold px-1 appearance-none">
             <option value="">인증 산 ⛰️</option>
         </select>
+        
         <div class="w-[25%] flex items-center p-0.5 bg-white/5 rounded-xl border border-white/5 h-[42px]">
             <input type="radio" name="n_pickup" id="p_ok" value="(픽업 가능)" class="hidden peer/ok">
             <label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-lg text-[9px] font-black text-gray-400 cursor-pointer peer-checked/ok:bg-blue-600 peer-checked/ok:text-white">픽업</label>
@@ -59,6 +64,7 @@
         </div>
     </div>
 </div>
+
 
             <div>
                 <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block uppercase">🟠 일시</label>
@@ -401,34 +407,36 @@
     initInputs();
     syncMountains();
 
-         // 별 아이콘 상태 업데이트 함수
+         // 별 상태 업데이트 (FILL 속성 포함)
 const updateFavIcon = () => {
     const mtName = document.getElementById('n_mt').value.trim();
     const icon = document.getElementById('fav_icon');
     const favs = getFavorites();
     
-    if (mtName && favs.includes(mtName)) {
-        icon.style.color = "#fbbf24"; // 노란색 (활성)
-        icon.style.fontVariationSettings = "'FILL' 1";
+    if (mtName && mtName !== '미정' && favs.includes(mtName)) {
+        icon.style.color = "#fbbf24"; // 노란색
+        icon.style.fontVariationSettings = "'FILL' 1, 'wght' 400"; // 별 채우기
     } else {
-        icon.style.color = ""; // 회색 (비활성)
-        icon.style.fontVariationSettings = "'FILL' 0";
+        icon.style.color = "#6b7280"; // 기본 회색
+        icon.style.fontVariationSettings = "'FILL' 0, 'wght' 400"; // 빈 별
     }
 };
 
-// 즐겨찾기 버튼 클릭 이벤트
-document.getElementById('btn_fav_toggle').onclick = () => {
+// 클릭 시 토글 및 리스트 갱신
+document.getElementById('btn_fav_toggle').onclick = (e) => {
+    e.preventDefault(); // 폼 제출 방지
     const mtName = document.getElementById('n_mt').value.trim();
     if (!mtName || mtName === '미정') return;
     
-    window.toggleFavorite(mtName); // 기존에 만든 토글 함수 호출
-    updateFavIcon(); // 별 색깔 변경
+    // 기존에 선언된 toggleFavorite 호출
+    window.toggleFavorite(mtName);
+    updateFavIcon();
 };
 
-// 기존 n_mt 입력이나 셀렉트 변경 시에도 별 색깔 갱신되도록 연결
+// 입력창 및 셀렉트 박스 연동
 document.getElementById('n_mt').addEventListener('input', updateFavIcon);
 document.getElementById('official_mt_select').addEventListener('change', () => {
-    setTimeout(updateFavIcon, 50); // 값이 채워진 후 실행
+    setTimeout(updateFavIcon, 100); 
 });
 
 </script>
