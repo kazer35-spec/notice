@@ -505,8 +505,30 @@ const setupAutoTab = () => {
         // 2~9인 경우 즉시 이동
         else if (parseInt(val) >= 2 && parseInt(val) <= 9) {
             nMin.focus();
-        }
-    });
+
+            // [3] 소요시간(시) -> 소요시간(분) 이동
+const nTimeH = document.getElementById('n_time_h');
+const nTimeM = document.getElementById('n_time_m');
+let durationTimer;
+
+nTimeH.addEventListener('input', (e) => {
+    const val = e.target.value;
+    if (!val) return;
+
+    clearTimeout(durationTimer);
+
+    // 1, 10~24 등 추가 입력이 가능성이 있는 숫자는 2초 대기
+    // (산행 소요시간 특성상 10시간 이상이 가능하므로 범위를 넓게 잡았습니다)
+    if (val === '1' || (parseInt(val) >= 10 && parseInt(val) <= 24)) {
+        durationTimer = setTimeout(() => {
+            if(nTimeH.value === val) nTimeM.focus();
+        }, 2000);
+    } 
+    // 2~9 사이의 숫자는 입력 즉시 '분'으로 이동
+    else if (parseInt(val) >= 2 && parseInt(val) <= 9) {
+        nTimeM.focus();
+    }
+});
 };
 
 // 실행
