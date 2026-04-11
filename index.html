@@ -67,19 +67,24 @@
 
 
             <div>
-                <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block uppercase">🟠 일시</label>
-                <div class="flex items-center w-full gap-2">
-                    <div class="flex-1 flex items-center bg-white/5 rounded-xl px-3 h-[42px] text-sm text-gray-400">
-                        <input type="number" id="n_month" placeholder="0" class="w-full text-white text-sm text-center font-bold">월
-                        <input type="number" id="n_day" placeholder="0" class="w-full text-white text-sm text-center font-bold">일
-                    </div>
-                    <select id="n_ampm" class="w-[65px] h-[42px] bg-slate-800 rounded-xl text-white text-[11px] text-center"><option value="오전">오전</option><option value="오후">오후</option></select>
-                    <div class="w-[105px] flex items-center bg-white/5 rounded-xl px-2 h-[42px] text-sm text-gray-400">
-                        <input type="number" id="n_hour" placeholder="0" class="w-full text-white text-sm text-center font-bold">시
-                        <input type="number" id="n_min" placeholder="00" class="w-full text-white text-sm text-center font-bold">분
-                    </div>
-                </div>
-            </div>
+    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block uppercase">🟠 일시</label>
+    <div class="flex items-center w-full gap-2">
+        <div class="flex-1 flex items-center bg-white/5 rounded-xl px-3 h-[42px] text-sm text-gray-400">
+            <input type="number" id="n_month" placeholder="0" class="w-full text-white text-sm text-center font-bold">월
+            <input type="number" id="n_day" placeholder="0" class="w-full text-white text-sm text-center font-bold">일
+        </div>
+
+        <div id="btn_ampm_toggle" class="w-[70px] h-[42px] bg-slate-800 rounded-xl flex items-center justify-center cursor-pointer border border-white/5 select-none transition-all active:scale-95 group">
+            <span id="txt_ampm" class="text-white text-[11px] font-black tracking-widest group-hover:text-emerald-400">오전</span>
+            <input type="hidden" id="n_ampm" value="오전">
+        </div>
+
+        <div class="w-[105px] flex items-center bg-white/5 rounded-xl px-2 h-[42px] text-sm text-gray-400">
+            <input type="number" id="n_hour" placeholder="0" class="w-full text-white text-sm text-center font-bold">시
+            <input type="number" id="n_min" placeholder="00" class="w-full text-white text-sm text-center font-bold">분
+        </div>
+    </div>
+</div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col">
@@ -438,6 +443,25 @@ document.getElementById('n_mt').addEventListener('input', updateFavIcon);
 document.getElementById('official_mt_select').addEventListener('change', () => {
     setTimeout(updateFavIcon, 100); 
 });
+
+         // 오전/오후 토글 버튼 제어
+const ampmBtn = document.getElementById('btn_ampm_toggle');
+const ampmTxt = document.getElementById('txt_ampm');
+const ampmInput = document.getElementById('n_ampm');
+
+if (ampmBtn) {
+    ampmBtn.onclick = () => {
+        if (ampmInput.value === "오전") {
+            ampmInput.value = "오후";
+            ampmTxt.innerText = "오후";
+            ampmTxt.style.color = "#fb923c"; // 오후일 때 오렌지색으로 강조
+        } else {
+            ampmInput.value = "오전";
+            ampmTxt.innerText = "오전";
+            ampmTxt.style.color = "#ffffff";
+        }
+    };
+}
 
 </script>
  </body>
