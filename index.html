@@ -228,7 +228,7 @@
         const favoriteItems = cachedMountains.filter(m => favs.includes(m.id));
         const normalItems = cachedMountains.filter(m => !favs.includes(m.id));
 
-        select.innerHTML = '<option value="">⛰️인증산</option>';
+        select.innerHTML = '<option value="">⛰️등록 명산</option>';
 
         if (favoriteItems.length > 0) {
             const groupLabel = document.createElement('option');
