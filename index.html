@@ -355,25 +355,38 @@
         const min = document.getElementById('n_min').value || "00";
         const meet = document.getElementById('n_meet').value || '추후 공지';
         const th = document.getElementById('n_time_h').value; 
-        const tm = document.getElementById('n_time_m').value;
-        const dur = th ? `약 ${th}시간${tm ? ` ${tm}분` : ""}` : "미정";
+    const tm = document.getElementById('n_time_m').value;
+    
+    // [수정된 소요시간 로직] 시간 혹은 분 중 하나만 있어도 표시되게 변경
+    let dur = "미정";
+    if (th || tm) {
+        const hourPart = th ? `${th}시간` : "";
+        const minPart = tm ? ` ${tm}분` : "";
+        dur = `약 ${hourPart}${minPart}`.trim();
+    }
         const course = document.getElementById('n_course').value || '미정';
         const dist = document.getElementById('n_dist').value ? `${document.getElementById('n_dist').value}km` : '미정';
         const lv = document.getElementById('n_lv').value; 
         const etc = document.getElementById('n_etc').value;
 
         const safety = `💢산행시 일어나는 모든 사건 사고는 본인의 \n    책임이므로 안전에 유의하여 산행하세요\n💢우천, 강풍 등 기상 악화 시 안전을 위해서 \n    모임이 취소될 수 있습니다\n💢참석자 유무 상황에 따라 시간 변경 및 \n    일정 취소될 수 있습니다`;
-         // 2. 템플릿 제목 변경
+             // 공지 템플릿 생성
     const template = `[산:우리 ${type} 공지]\n🔴${type}지: ${mt}${pTag}\n🟠일시: ${m}월 ${d}일 ${ampm} ${h}시 ${min}분\n🟡집결지: ${meet}\n🟢소요시간: ${dur}\n🔵${type}코스: ${course}\n⚪️거리: ${dist}\n🟣난이도: ${lv}\n🟤준비물: ${etc}\n\n${safety}${pNotice}`;
 
+    // 화면 업데이트
     document.getElementById('n_final_text').innerText = template;
-    document.getElementById('n_result_box').classList.remove('hidden');
+    const resultBox = document.getElementById('n_result_box');
+    resultBox.classList.remove('hidden');
 
-    // 3. DB 저장 시 타입(type) 정보도 함께 저장
+    // [수정된 스크롤 로직] 복사 버튼이 있는 하단으로 부드럽게 이동
+    setTimeout(() => {
+        resultBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 100);
+
+    // DB 저장 로직 (이하 동일)
     if(mt !== '미정') {
         await setDoc(doc(db, "mountain_drafts", mt), {
-            type, // 여기에 '런닝', '산책' 등이 저장됨
-            meet, time_h: th, time_m: tm, course, dist: document.getElementById('n_dist').value, lv, updatedAt: serverTimestamp()
+            type, meet, time_h: th, time_m: tm, course, dist: document.getElementById('n_dist').value, lv, updatedAt: serverTimestamp()
         }, { merge: true });
         await syncMountains(); 
     }
