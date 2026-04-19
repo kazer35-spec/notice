@@ -40,6 +40,7 @@
 
         <div class="p-6 max-h-[75vh] overflow-y-auto space-y-4 custom-scrollbar">
             <div>
+                <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚫️ 운동 선택</label>
                 <div class="flex gap-1.5 mb-3">
     <input type="radio" name="activity_type" id="type_hike" value="산행" class="hidden peer/hike" checked>
     <label for="type_hike" class="flex-1 py-2 rounded-xl text-[10px] font-black text-center cursor-pointer border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 peer-checked/hike:bg-emerald-500 peer-checked/hike:text-white transition-all">산행</label>
@@ -196,6 +197,10 @@
     const getFavorites = () => JSON.parse(localStorage.getItem('my_favorites') || '[]');
 
     const fillFields = (d) => {
+        if (d.type) {
+        const targetRadio = document.querySelector(`input[name="activity_type"][value="${d.type}"]`);
+        if (targetRadio) targetRadio.checked = true;
+        }
         document.getElementById('n_meet').value = d.meet || '';
         document.getElementById('n_time_h').value = d.time_h || '';
         document.getElementById('n_time_m').value = d.time_m || '';
