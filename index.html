@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <style>
-
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0f101a; color: white; -webkit-tap-highlight-color: transparent; }
         .animate-bottom-up { animation: slideUp 0.4s ease-out; }
@@ -24,17 +23,6 @@
         .duration-box { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 10px; }
         .duration-box span { font-size: 0.875rem; color: #6b7280; flex-shrink: 0; }
         .duration-box input { width: 100%; text-align: center; font-size: 0.875rem; font-weight: 700; color: white; }
-
-        /* 소요시간 박스 높이 수정 */
-.duration-box { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 4px; 
-    padding: 0 10px; 
-    height: 40px; /* 42px에서 40px로 변경 */
-}
-
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -69,20 +57,21 @@
 
     <label class="text-[9px] font-black text-orange-400 uppercase tracking-wider ml-1 mb-1.5 block">🔴 산행지 (별 체크시 즐겨찾기)</label>
     <div class="flex items-center gap-2">
-    <div class="relative w-[45%] flex items-center h-[40px]"> 
-        <input type="text" id="n_mt" placeholder="어디로?" autocomplete="off" 
-            class="w-full bg-white/5 h-full rounded-xl text-white text-sm pl-3 pr-9 focus:ring-1 ring-emerald-500/50">
-        <button id="btn_fav_toggle" type="button" class="absolute right-2 h-full flex items-center justify-center text-gray-500 hover:text-yellow-400" style="width: 30px;">
-            <span class="material-symbols-outlined text-[20px]" id="fav_icon">star</span>
-        </button>
-    </div>
-    
-    <select id="official_mt_select" class="w-[30%] h-[40px] bg-slate-800 border border-white/10 rounded-xl text-white text-[10px] text-center font-bold px-1 appearance-none">
-        <option value="">인증 산 ⛰️</option>
-    </select>
-    
-    <div class="w-[25%] flex items-center p-0.5 bg-white/5 rounded-xl border border-white/5 h-[40px]">
-    
+        <div class="relative w-[45%] flex items-center h-[38px]"> <input type="text" id="n_mt" placeholder="어디로?" autocomplete="off" 
+                class="w-full bg-white/5 h-full rounded-xl text-white text-sm pl-3 pr-9 focus:ring-1 ring-emerald-500/50">
+            
+            <button id="btn_fav_toggle" type="button" 
+                class="absolute right-2 h-full flex items-center justify-center text-gray-500 hover:text-yellow-400 transition-colors" 
+                style="width: 30px;">
+                <span class="material-symbols-outlined text-[20px] select-none" id="fav_icon" style="font-variation-settings: 'FILL' 0, 'wght' 400;">star</span>
+            </button>
+        </div>
+        
+        <select id="official_mt_select" class="w-[30%] h-[38px] bg-slate-800 border border-white/10 rounded-xl text-white text-[10px] text-center font-bold px-1 appearance-none">
+            <option value="">인증 산 ⛰️</option>
+        </select>
+        
+        <div class="w-[25%] flex items-center p-0.5 bg-white/5 rounded-xl border border-white/5 h-[38px]">
             <input type="radio" name="n_pickup" id="p_ok" value="(픽업 가능)" class="hidden peer/ok">
             <label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-lg text-[9px] font-black text-gray-400 cursor-pointer peer-checked/ok:bg-blue-600 peer-checked/ok:text-white">픽업</label>
             <input type="radio" name="n_pickup" id="p_no" value="(픽업 불가)" class="hidden peer/no">
@@ -95,28 +84,31 @@
             <div>
     <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block uppercase">🟠 일시</label>
     <div class="flex items-center w-full gap-2">
-    <div class="flex-1 flex items-center bg-white/5 rounded-xl px-3 h-[40px] text-sm text-gray-400">
-        <input type="number" id="n_month" ... class="h-full">월
-        <input type="number" id="n_day" ... class="h-full">일
+        <div class="flex-1 flex items-center bg-white/5 rounded-xl px-3 h-[42px] text-sm text-gray-400">
+            <input type="number" id="n_month" placeholder="0" class="w-full text-white text-sm text-center font-bold">월
+            <input type="number" id="n_day" placeholder="0" class="w-full text-white text-sm text-center font-bold">일
+        </div>
+
+        <div id="btn_ampm_toggle" class="w-[70px] h-[42px] bg-slate-800 rounded-xl flex items-center justify-center cursor-pointer border border-white/5 select-none transition-all active:scale-95 group">
+            <span id="txt_ampm" class="text-white text-[11px] font-black tracking-widest group-hover:text-emerald-400">오전</span>
+            <input type="hidden" id="n_ampm" value="오전">
+        </div>
+
+        <div class="w-[105px] flex items-center bg-white/5 rounded-xl px-2 h-[42px] text-sm text-gray-400">
+            <input type="number" id="n_hour" placeholder="0" class="w-full text-white text-sm text-center font-bold">시
+            <input type="number" id="n_min" placeholder="00" class="w-full text-white text-sm text-center font-bold">분
+        </div>
     </div>
-    <div id="btn_ampm_toggle" class="w-[70px] h-[40px] bg-slate-800 rounded-xl ...">
-        <span id="txt_ampm" ...>오전</span>
-    </div>
-    <div class="w-[105px] flex items-center bg-white/5 rounded-xl px-2 h-[40px] text-sm text-gray-400">
-        <input type="number" id="n_hour" ... class="h-full">시
-        <input type="number" id="n_min" ... class="h-full">분
-    </div>
-</div>
 </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col">
                     <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟡 집결지</label>
-                    <input type="text" id="n_meet" placeholder="만남 장소" class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
+                    <input type="text" id="n_meet" placeholder="만남 장소" class="w-full bg-white/5 h-[42px] rounded-xl text-white text-sm px-4">
                 </div>
                 <div class="flex flex-col">
                     <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟢 소요시간</label>
-                    <div class="duration-box bg-white/5 h-[40px] rounded-xl">
+                    <div class="duration-box bg-white/5 h-[42px] rounded-xl">
     <span>약</span>
     <input type="number" id="n_time_h" placeholder="0" inputmode="numeric">
     <span>시간</span>
@@ -133,14 +125,14 @@
             <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col">
                     <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 거리</label>
-                    <div class="flex items-center bg-white/5 rounded-xl pr-4 h-[40px]">
+                    <div class="flex items-center bg-white/5 rounded-xl pr-4 h-[42px]">
     <input type="number" id="n_dist" step="0.1" inputmode="decimal" class="w-full text-white text-sm text-right px-2 font-bold">
     <span class="text-[10px] text-gray-600 font-black">km</span>
 </div>
                 </div>
                 <div class="flex flex-col">
                     <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 난이도</label>
-                    <select id="n_lv" class="w-full h-[40px] bg-slate-800 px-3 rounded-xl text-white text-[11px] font-bold">
+                    <select id="n_lv" class="w-full h-[42px] bg-slate-800 px-3 rounded-xl text-white text-[11px] font-bold">
                         <option value="하 (산책)">하 (산책)</option>
                         <option value="중하 (평범)">중하 (평범)</option>
                         <option value="중 (약간힘듦)">중 (약간힘듦)</option>
@@ -152,7 +144,7 @@
 
             <div>
                 <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟤 준비물</label>
-                <input type="text" id="n_etc" value="물, 간식, 기타" class="w-full bg-white/5 h-[40px] rounded-xl text-white text-sm px-4">
+                <input type="text" id="n_etc" value="물, 간식, 기타" class="w-full bg-white/5 h-[42px] rounded-xl text-white text-sm px-4">
             </div>
 
             <button id="btn_generate" class="neon-btn w-full h-[56px] mt-2 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-tighter">✨ 일정 생성 & 안전 저장</button>
