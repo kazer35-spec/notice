@@ -190,17 +190,19 @@
         document.getElementById('n_lv').value = d.lv || '하 (산책)';
     };
 
-    // [2] 리스트 렌더링 (즐겨찾기 포함)
+        // [2] 리스트 렌더링 (즐겨찾기 및 임시저장 포함)
     const renderSelectOptions = () => {
         const select = document.getElementById('official_mt_select');
         if (!select) return;
 
         const favs = getFavorites(); 
         const favoriteItems = cachedMountains.filter(m => favs.includes(m.id));
-        const normalItems = cachedMountains.filter(m => !favs.includes(m.id));
+        // 인증산(official)과 임시저장(draft) 중 즐겨찾기가 아닌 것들
+        const otherItems = cachedMountains.filter(m => !favs.includes(m.id));
 
-        select.innerHTML = '<option value="">인증 산 ⛰️</option>';
+        select.innerHTML = '<option value="">목록 선택 ⛰️</option>';
 
+        // 1. 즐겨찾기 그룹
         if (favoriteItems.length > 0) {
             const groupLabel = document.createElement('option');
             groupLabel.textContent = "--- 즐겨찾기 ⭐ ---";
@@ -213,21 +215,41 @@
                 opt.innerText = `⭐ ${m.id}`;
                 select.appendChild(opt);
             });
-
-            const line = document.createElement('option');
-            line.textContent = "------------------";
-            line.disabled = true;
-            select.appendChild(line);
         }
 
-        normalItems.forEach(m => {
-            if(m.type === 'official' && m.meet && m.meet !== "추후 공지") {
+        // 2. 임시저장/런닝 등 (Draft) 그룹
+        const draftItems = otherItems.filter(m => m.type === 'draft');
+        if (draftItems.length > 0) {
+            const groupLabel = document.createElement('option');
+            groupLabel.textContent = "--- 최근/임시 저장 ---";
+            groupLabel.disabled = true;
+            select.appendChild(groupLabel);
+
+            draftItems.forEach(m => {
                 const opt = document.createElement('option');
                 opt.value = m.id;
-                opt.innerText = m.id;
+                opt.innerText = `📝 ${m.id}`;
                 select.appendChild(opt);
-            }
-        });
+            });
+        }
+
+        // 3. 일반 인증 산 (Official) 그룹
+        const officialItems = otherItems.filter(m => m.type === 'official');
+        if (officialItems.length > 0) {
+            const groupLabel = document.createElement('option');
+            groupLabel.textContent = "--- 인증 산 목록 ---";
+            groupLabel.disabled = true;
+            select.appendChild(groupLabel);
+
+            officialItems.forEach(m => {
+                if(m.meet && m.meet !== "추후 공지") {
+                    const opt = document.createElement('option');
+                    opt.value = m.id;
+                    opt.innerText = m.id;
+                    select.appendChild(opt);
+                }
+            });
+        }
     };
 
     // [3] 데이터 동기화
