@@ -383,20 +383,29 @@
     };
 
     const loadDrafts = async () => {
-        const list_el = document.getElementById('draft_list');
-        const snap = await getDocs(collection(db, "mountain_drafts"));
-        list_el.innerHTML = snap.empty ? '<p class="text-center py-10 text-gray-600 text-[10px]">등록된 제안이 없습니다.</p>' : "";
-        snap.forEach(d => {
-            const div = document.createElement('div');
-            div.className = "bg-white/5 border border-white/5 p-3 rounded-2xl flex justify-between items-center mb-2";
-            div.innerHTML = `<div class="flex-1"><p class="text-xs font-bold text-white">${d.id}</p></div>
-                <div class="flex gap-2">
-                    <button onclick="approveMt('${d.id}')" class="bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">승인</button>
-                    <button onclick="deleteDraft('${d.id}')" class="bg-red-600/20 text-red-400 border border-red-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">삭제</button>
-                </div>`;
-            list_el.appendChild(div);
-        });
-    };
+    const list_el = document.getElementById('draft_list');
+    const snap = await getDocs(collection(db, "mountain_drafts"));
+    list_el.innerHTML = snap.empty ? '<p class="text-center py-10 text-gray-600 text-[10px]">등록된 데이터가 없습니다.</p>' : "";
+    
+    snap.forEach(d => {
+        const isRoutine = d.id.includes("런닝") || d.id.includes("산책") || d.id.includes("트래킹");
+        const div = document.createElement('div');
+        // 상시 활용(런닝 등)은 배경색을 살짝 다르게(보라색 계열) 설정
+        div.className = `p-3 rounded-2xl flex justify-between items-center mb-2 border ${isRoutine ? 'bg-purple-600/10 border-purple-500/20' : 'bg-white/5 border-white/5'}`;
+        
+        div.innerHTML = `
+            <div class="flex-1">
+                <p class="text-xs font-bold ${isRoutine ? 'text-purple-400' : 'text-white'}">${d.id}</p>
+                ${isRoutine ? '<span class="text-[8px] text-purple-500/80 font-bold uppercase">Routine Item</span>' : ''}
+            </div>
+            <div class="flex gap-2">
+                ${!isRoutine ? `<button onclick="approveMt('${d.id}')" class="bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">승인</button>` : '<span class="text-[9px] text-gray-500 self-center mr-2 font-bold">상시보관중</span>'}
+                <button onclick="deleteDraft('${d.id}')" class="bg-red-600/20 text-red-400 border border-red-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">삭제</button>
+            </div>`;
+        list_el.appendChild(div);
+    });
+};
+
 
     window.approveMt = async (id) => {
         if(!confirm(`'${id}' 정보를 공식 DB에 반영할까요?`)) return;
