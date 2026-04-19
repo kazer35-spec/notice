@@ -190,19 +190,17 @@
         document.getElementById('n_lv').value = d.lv || '하 (산책)';
     };
 
-        // [2] 리스트 렌더링 (즐겨찾기 및 임시저장 포함)
+    // [2] 리스트 렌더링 (즐겨찾기 포함)
     const renderSelectOptions = () => {
         const select = document.getElementById('official_mt_select');
         if (!select) return;
 
         const favs = getFavorites(); 
         const favoriteItems = cachedMountains.filter(m => favs.includes(m.id));
-        // 인증산(official)과 임시저장(draft) 중 즐겨찾기가 아닌 것들
-        const otherItems = cachedMountains.filter(m => !favs.includes(m.id));
+        const normalItems = cachedMountains.filter(m => !favs.includes(m.id));
 
-        select.innerHTML = '<option value="">목록 선택 ⛰️</option>';
+        select.innerHTML = '<option value="">인증 산 ⛰️</option>';
 
-        // 1. 즐겨찾기 그룹
         if (favoriteItems.length > 0) {
             const groupLabel = document.createElement('option');
             groupLabel.textContent = "--- 즐겨찾기 ⭐ ---";
@@ -215,41 +213,21 @@
                 opt.innerText = `⭐ ${m.id}`;
                 select.appendChild(opt);
             });
+
+            const line = document.createElement('option');
+            line.textContent = "------------------";
+            line.disabled = true;
+            select.appendChild(line);
         }
 
-        // 2. 임시저장/런닝 등 (Draft) 그룹
-        const draftItems = otherItems.filter(m => m.type === 'draft');
-        if (draftItems.length > 0) {
-            const groupLabel = document.createElement('option');
-            groupLabel.textContent = "--- 최근/임시 저장 ---";
-            groupLabel.disabled = true;
-            select.appendChild(groupLabel);
-
-            draftItems.forEach(m => {
+        normalItems.forEach(m => {
+            if(m.type === 'official' && m.meet && m.meet !== "추후 공지") {
                 const opt = document.createElement('option');
                 opt.value = m.id;
-                opt.innerText = `📝 ${m.id}`;
+                opt.innerText = m.id;
                 select.appendChild(opt);
-            });
-        }
-
-        // 3. 일반 인증 산 (Official) 그룹
-        const officialItems = otherItems.filter(m => m.type === 'official');
-        if (officialItems.length > 0) {
-            const groupLabel = document.createElement('option');
-            groupLabel.textContent = "--- 인증 산 목록 ---";
-            groupLabel.disabled = true;
-            select.appendChild(groupLabel);
-
-            officialItems.forEach(m => {
-                if(m.meet && m.meet !== "추후 공지") {
-                    const opt = document.createElement('option');
-                    opt.value = m.id;
-                    opt.innerText = m.id;
-                    select.appendChild(opt);
-                }
-            });
-        }
+            }
+        });
     };
 
     // [3] 데이터 동기화
@@ -316,10 +294,19 @@
         };
 
         document.getElementById('n_mt').addEventListener('input', (e) => {
-            const found = cachedMountains.find(m => m.id === e.target.value.trim());
-            if(found) fillFields(found);
-            updateFavIcon();
-        });
+    const inputVal = e.target.value.trim();
+    if (!inputVal) return; // 입력값이 없으면 중단
+
+    // 전체 캐시(공식 산 + 임시저장 데이터)에서 이름이 정확히 일치하는지 확인
+    const found = cachedMountains.find(m => m.id === inputVal);
+    
+    if (found) {
+        // 일치하는 데이터를 찾으면 코스, 시간, 거리 등을 자동으로 채움
+        fillFields(found);
+    }
+    updateFavIcon();
+});
+
 
         document.getElementById('n_course').oninput = (e) => {
             if(e.target.value.includes('  ')) e.target.value = e.target.value.replace(/  /g, ' - ');
