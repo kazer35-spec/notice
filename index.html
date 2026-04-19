@@ -42,7 +42,7 @@
         <div class="p-6 max-h-[75vh] overflow-y-auto space-y-3 custom-scrollbar">
     <div>
     <div>
-    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚫️ 운동 선택 (산행 고정)</label>
+    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔴 운동 선택 (산행 고정)</label>
     <div class="flex gap-1.5 mb-2">
         <input type="radio" name="activity_type" id="type_hike" value="산행" class="hidden peer/hike" checked>
         <label for="type_hike" class="flex-1 py-1.5 rounded-xl text-[10px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/hike:border-emerald-500/50 peer-checked/hike:bg-emerald-500 peer-checked/hike:text-white transition-all">산행</label>
@@ -59,7 +59,7 @@
 </div>
 
 
-        <label class="text-[9px] font-black text-gray-500 uppercase tracking-wider ml-1 mb-1 block">🔴 산행지 (별 체크시 즐겨찾기)</label>
+        <label class="text-[9px] font-black text-gray-500 uppercase tracking-wider ml-1 mb-1 block">🟠 산행지 (인증산 불러오기)</label>
         <div class="flex items-center gap-2">
             <div class="relative w-[45%] flex items-center h-[36px]">
                 <input type="text" id="n_mt" placeholder="어디로?" autocomplete="off" class="w-full bg-white/5 h-full rounded-xl text-white text-sm pl-3 pr-9 focus:ring-1 ring-emerald-500/50">
@@ -80,7 +80,7 @@
     </div>
 
     <div>
-        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block uppercase">🟠 일시</label>
+        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block uppercase">🟡 일시</label>
         <div class="flex items-center w-full gap-2">
             <div class="flex-1 flex items-center bg-white/5 rounded-xl px-3 h-[36px] text-sm text-gray-400">
                 <input type="number" id="n_month" placeholder="0" class="w-full text-white text-sm text-center font-bold">월
@@ -99,11 +99,11 @@
 
     <div class="grid grid-cols-2 gap-3">
         <div class="flex flex-col">
-            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟡 집결지</label>
+            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟢 집결지</label>
             <input type="text" id="n_meet" placeholder="만남 장소" class="w-full bg-white/5 h-[36px] rounded-xl text-white text-sm px-4">
         </div>
         <div class="flex flex-col">
-            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟢 소요시간</label>
+            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 소요시간</label>
             <div class="duration-box bg-white/5 h-[36px] rounded-xl">
                 <span>약</span>
                 <input type="number" id="n_time_h" placeholder="0" inputmode="numeric">
@@ -115,20 +115,20 @@
     </div>
 
     <div>
-        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 산행코스 (스페이스 3번 = ' - ')</label>
+        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 산행코스 (스페이스 3번 = ' - ')</label>
         <input type="text" id="n_course" placeholder='코스를 입력하세요' class="w-full bg-white/5 h-[36px] rounded-xl text-white text-sm px-4">
     </div>
 
     <div class="grid grid-cols-2 gap-3">
         <div class="flex flex-col">
-            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 거리</label>
+            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 거리</label>
             <div class="flex items-center bg-white/5 rounded-xl pr-4 h-[36px]">
                 <input type="number" id="n_dist" step="0.1" inputmode="decimal" class="w-full text-white text-sm text-right px-2 font-bold">
                 <span class="text-[10px] text-gray-600 font-black">km</span>
             </div>
         </div>
         <div class="flex flex-col">
-            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 난이도</label>
+            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟤 난이도</label>
             <select id="n_lv" class="w-full h-[36px] bg-slate-800 px-3 rounded-xl text-white text-[11px] font-bold">
                 <option value="하 (산책)">하 (쉬움)</option>
                 <option value="중하 (평범)">중하 (평범)</option>
@@ -140,7 +140,7 @@
     </div>
 
     <div>
-        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟤 준비물</label>
+        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚫️ 준비물</label>
         <input type="text" id="n_etc" value="물, 간식, 기타" class="w-full bg-white/5 h-[36px] rounded-xl text-white text-sm px-4">
     </div>
 </div>
