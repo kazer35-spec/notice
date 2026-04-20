@@ -306,7 +306,7 @@ const draftList = draftSnap.docs.map(d => {
         } catch (e) { console.error("Sync Error:", e); }
     };
 
-        // [4] 입력 제어 및 이벤트 초기화
+           // [4] 입력 제어 및 이벤트 초기화
     const initInputs = () => {
         const allInputIds = ['n_mt', 'n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m', 'n_etc'];
         allInputIds.forEach(id => {
@@ -315,15 +315,13 @@ const draftList = draftSnap.docs.map(d => {
             el.setAttribute('autocomplete', 'off');
             el.setAttribute('spellcheck', 'false');
 
-            // n_mt, n_etc 외에 n_course도 전체 선택 대상에서 제외 (수정 편의성)
-            if (id !== 'n_mt' && id !== 'n_etc' && id !== 'n_course') {
+            if (id !== 'n_mt' && id !== 'n_etc') {
                 el.addEventListener('focus', function() {
                     if (this.value !== "") setTimeout(() => { this.select(); }, 10);
                 });
             }
         });
 
-        // 산행지 선택 시 자동 완성
         document.getElementById('official_mt_select').onchange = (e) => {
             const mtName = e.target.value;
             if (!mtName) return;
@@ -333,35 +331,23 @@ const draftList = draftSnap.docs.map(d => {
             document.getElementById('n_mt').blur();
         };
 
-        // 산행지 직접 입력 시 자동 완성
         document.getElementById('n_mt').addEventListener('input', (e) => {
-            const inputVal = e.target.value.trim();
-            if (!inputVal) return;
-            const found = cachedMountains.find(m => m.id === inputVal);
-            if (found) fillFields(found);
-            updateFavIcon();
-        });
+    const inputVal = e.target.value.trim();
+    if (!inputVal) return; // 입력값이 없으면 중단
 
-        // --- 산행코스 자동 하이픈 및 커서 고정 로직 ---
-        const courseInput = document.getElementById('n_course');
-        courseInput.oninput = (e) => {
-            const el = e.target;
-            const val = el.value;
+    // 전체 캐시(공식 산 + 임시저장 데이터)에서 이름이 정확히 일치하는지 확인
+    const found = cachedMountains.find(m => m.id === inputVal);
+    
+    if (found) {
+        // 일치하는 데이터를 찾으면 코스, 시간, 거리 등을 자동으로 채움
+        fillFields(found);
+    }
+    updateFavIcon();
+});
 
-            if (val.includes(' ')) {
-                // 현재 커서(캐럿) 위치 저장
-                const start = el.selectionStart;
-                
-                // 공백을 ' - '로 치환 (연속된 공백도 하나로 처리)
-                const newVal = val.replace(/ +/g, ' - ');
-                
-                if (val !== newVal) {
-                    el.value = newVal;
-                    // 늘어난 길이만큼 커서 위치 조정 (커서가 뒤로 튕기는 현상 방지)
-                    const offset = newVal.length - val.length;
-                    el.setSelectionRange(start + offset, start + offset);
-                }
-            }
+
+        document.getElementById('n_course').oninput = (e) => {
+            if(e.target.value.includes(' ')) e.target.value = e.target.value.replace(/ /g, ' - ');
         };
     };
 
