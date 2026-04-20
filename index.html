@@ -130,7 +130,7 @@
         <div class="flex flex-col">
             <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟤 난이도</label>
             <select id="n_lv" class="w-full h-[36px] bg-slate-800 px-3 rounded-xl text-white text-[11px] font-bold">
-                <option value="하 (산책)">하 (쉬움)</option>
+                <option value="하 (쉬움)">하 (쉬움)</option>
                 <option value="중하 (평범)">중하 (평범)</option>
                 <option value="중 (약간힘듦)">중 (약간힘듦)</option>
                 <option value="중상 (힘듦)">중상 (힘듦)</option>
@@ -215,7 +215,7 @@
     document.getElementById('n_time_m').value = d.time_m || '';
     document.getElementById('n_course').value = d.course || '';
     document.getElementById('n_dist').value = d.dist || '';
-    document.getElementById('n_lv').value = d.lv || '하 (산책)';
+    document.getElementById('n_lv').value = d.lv || '하 (쉬움)';
 };
 
 
@@ -347,7 +347,7 @@ const draftList = draftSnap.docs.map(d => {
 
 
         document.getElementById('n_course').oninput = (e) => {
-            if(e.target.value.includes('  ')) e.target.value = e.target.value.replace(/  /g, ' - ');
+            if(e.target.value.includes(' ')) e.target.value = e.target.value.replace(/ /g, ' - ');
         };
     };
 
@@ -370,7 +370,7 @@ const draftList = draftSnap.docs.map(d => {
         const mt = document.getElementById('n_mt').value.trim() || '미정';
         const pickupOpt = document.querySelector('input[name="n_pickup"]:checked');
         let pTag = pickupOpt ? ` ${pickupOpt.value}` : "";
-        let pNotice = (pickupOpt && pickupOpt.id === 'p_ok') ? `\n💢일자, 시간, 장소 조율 가능합니다\n    차량 픽업 관련 문의 서브방에 입장해주세요` : "";
+        let pNotice = (pickupOpt && pickupOpt.id === 'p_ok') ? `\n💢일자, 시간, 장소 조율 가능합니다\n 차량 픽업 관련 문의 서브방에 입장해주세요` : "";
         
         const m = document.getElementById('n_month').value; 
         const d = document.getElementById('n_day').value;
@@ -393,7 +393,7 @@ const draftList = draftSnap.docs.map(d => {
         const lv = document.getElementById('n_lv').value; 
         const etc = document.getElementById('n_etc').value;
 
-        const safety = `💢산행시 일어나는 모든 사건 사고는 본인의 \n    책임이므로 안전에 유의하여 산행하세요\n💢우천, 강풍 등 기상 악화 시 안전을 위해서 \n    모임이 취소될 수 있습니다\n💢참석자 유무 상황에 따라 시간 변경 및 \n    일정 취소될 수 있습니다`;
+        const safety = `💢산행시 일어나는 모든 사건 사고는 본인의 \n 책임이므로 안전에 유의하여 산행하세요\n💢우천, 강풍 등 기상 악화 시 안전을 위해서 \n 모임이 취소될 수 있습니다\n💢참석자 유무 상황에 따라 시간 변경 및 \n 일정 취소될 수 있습니다`;
              // 공지 템플릿 생성
     const template = `[산:우리 ${type} 공지]\n🔴${type}지: ${mt}${pTag}\n🟠일시: ${m}월 ${d}일 ${ampm} ${h}시 ${min}분\n🟡집결지: ${meet}\n🟢소요시간: ${dur}\n🔵${type}코스: ${course}\n⚪️거리: ${dist}\n🟣난이도: ${lv}\n🟤준비물: ${etc}\n\n${safety}${pNotice}`;
 
