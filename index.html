@@ -306,21 +306,22 @@ const draftList = draftSnap.docs.map(d => {
         } catch (e) { console.error("Sync Error:", e); }
     };
 
-    // [4] 입력 제어 부분 수정
-const initInputs = () => {
-    const allInputIds = ['n_mt', 'n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m', 'n_etc'];
-    allInputIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        
-        // n_course(산행코스)는 focus 시 전체 선택(select) 대상에서 제외
-        if (id !== 'n_mt' && id !== 'n_etc' && id !== 'n_course') { 
-            el.addEventListener('focus', function() {
-                if (this.value !== "") setTimeout(() => { this.select(); }, 10);
-            });
-        }
-    });
-    
+    // [4] 입력 제어 및 이벤트 초기화
+    const initInputs = () => {
+        const allInputIds = ['n_mt', 'n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m', 'n_etc'];
+        allInputIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.setAttribute('autocomplete', 'off');
+            el.setAttribute('spellcheck', 'false');
+
+            if (id !== 'n_mt' && id !== 'n_etc') {
+                el.addEventListener('focus', function() {
+                    if (this.value !== "") setTimeout(() => { this.select(); }, 10);
+                });
+            }
+        });
+
         document.getElementById('official_mt_select').onchange = (e) => {
             const mtName = e.target.value;
             if (!mtName) return;
@@ -345,16 +346,10 @@ const initInputs = () => {
 });
 
 
-        // 산행코스 입력 로직 수정
-document.getElementById('n_course').oninput = (e) => {
-    const el = e.target;
-    if (el.value.includes(' ')) {
-        const start = el.selectionStart; // 현재 커서 위치 저장
-        el.value = el.value.replace(/ /g, ' - ');
-        // 커서 위치 재설정 (공백이 ' - ' 3글자로 변하므로 위치 보정 필요시 조정)
-        el.setSelectionRange(start + 2, start + 2); 
-    }
-};
+        document.getElementById('n_course').oninput = (e) => {
+            if(e.target.value.includes(' ')) e.target.value = e.target.value.replace(/ /g, ' - ');
+        };
+    };
 
     // [5] 전역 함수 (Window 객체 등록)
     window.toggleFavorite = (mtName, event) => {
