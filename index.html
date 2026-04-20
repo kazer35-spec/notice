@@ -307,49 +307,54 @@ const draftList = draftSnap.docs.map(d => {
     };
 
            // [4] 입력 제어 및 이벤트 초기화
-    const initInputs = () => {
-        const allInputIds = ['n_mt', 'n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m', 'n_etc'];
-        allInputIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (!el) return;
-            el.setAttribute('autocomplete', 'off');
-            el.setAttribute('spellcheck', 'false');
+const initInputs = () => {
+    const allInputIds = ['n_mt', 'n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m', 'n_etc'];
+    allInputIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.setAttribute('autocomplete', 'off');
+        el.setAttribute('spellcheck', 'false');
 
-            if (id !== 'n_mt' && id !== 'n_etc') {
-                el.addEventListener('focus', function() {
-                    if (this.value !== "") setTimeout(() => { this.select(); }, 10);
-                });
-            }
-        });
+        if (id !== 'n_mt' && id !== 'n_etc') {
+            el.addEventListener('focus', function() {
+                if (this.value !== "") setTimeout(() => { this.select(); }, 10);
+            });
+        }
+    });
 
-        document.getElementById('official_mt_select').onchange = (e) => {
-            const mtName = e.target.value;
-            if (!mtName) return;
-            document.getElementById('n_mt').value = mtName;
-            const found = cachedMountains.find(m => m.id === mtName);
-            if (found) fillFields(found);
-            document.getElementById('n_mt').blur();
-        };
-
-        document.getElementById('n_mt').addEventListener('input', (e) => {
-    const inputVal = e.target.value.trim();
-    if (!inputVal) return; // 입력값이 없으면 중단
-
-    // 전체 캐시(공식 산 + 임시저장 데이터)에서 이름이 정확히 일치하는지 확인
-    const found = cachedMountains.find(m => m.id === inputVal);
-    
-    if (found) {
-        // 일치하는 데이터를 찾으면 코스, 시간, 거리 등을 자동으로 채움
-        fillFields(found);
-    }
-    updateFavIcon();
-});
-
-
-        document.getElementById('n_course').oninput = (e) => {
-            if(e.target.value.includes(' ')) e.target.value = e.target.value.replace(/ /g, ' - ');
-        };
+    // 산 선택 셀렉트박스 변경 시
+    document.getElementById('official_mt_select').onchange = (e) => {
+        const mtName = e.target.value;
+        if (!mtName) return;
+        document.getElementById('n_mt').value = mtName;
+        const found = cachedMountains.find(m => m.id === mtName);
+        if (found) fillFields(found);
+        document.getElementById('n_mt').blur();
     };
+
+    // 산 이름 입력 시 자동 완성 로직
+    document.getElementById('n_mt').addEventListener('input', (e) => {
+        const inputVal = e.target.value.trim();
+        if (!inputVal) return; 
+
+        const found = cachedMountains.find(m => m.id === inputVal);
+        if (found) {
+            fillFields(found);
+        }
+        updateFavIcon();
+    });
+
+    // [수정된 부분] 코스 입력 시 하이픈 자동 변환 logic
+    document.getElementById('n_course').oninput = (e) => {
+        const el = e.target;
+        // 스페이스바가 두 번 연속('  ') 들어올 때만 ' - '으로 변경합니다.
+        // 이렇게 하면 단어 사이의 일반적인 공백 한 칸은 허용됩니다.
+        if (el.value.includes('  ')) {
+            el.value = el.value.replace(/  /g, ' - ');
+        }
+    };
+};
+
 
     // [5] 전역 함수 (Window 객체 등록)
     window.toggleFavorite = (mtName, event) => {
