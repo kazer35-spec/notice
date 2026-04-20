@@ -20,20 +20,28 @@
         .neon-btn { background: #111421; color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 0 10px rgba(56, 189, 248, 0.15); transition: all 0.2s ease; font-weight: 700; }
         .neon-btn:hover { border-color: rgba(56, 189, 248, 0.8); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
         
-        /* 이 부분을 찾아서 아래 내용으로 덮어씌워주세요 */
-.duration-box { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 10px; }
-.duration-box span { font-size: 12px; color: #6b7280; flex-shrink: 0; }
-.duration-box input { width: 100%; text-align: center; font-size: 12px; font-weight: 700; color: white; background: transparent; }
+        .duration-box { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 10px; }
+        .duration-box span { font-size: 12px; color: #6b7280; flex-shrink: 0; }
+        .duration-box input { width: 100%; text-align: center; font-size: 12px; font-weight: 700; color: white; background: transparent; }
+
+        /* 입력 시 테두리 강조 효과 */
+        .input-group { transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.05); }
+        
+        /* 타입별 하이라이트 컬러 */
+        .type-hike .has-value { border-color: rgba(16, 185, 129, 0.5) !important; box-shadow: 0 0 10px rgba(16, 185, 129, 0.1); }
+        .type-run .has-value { border-color: rgba(236, 72, 153, 0.5) !important; box-shadow: 0 0 10px rgba(236, 72, 153, 0.1); }
+        .type-track .has-value { border-color: rgba(168, 85, 247, 0.5) !important; box-shadow: 0 0 10px rgba(168, 85, 247, 0.1); }
+        .type-walk .has-value { border-color: rgba(249, 115, 22, 0.5) !important; box-shadow: 0 0 10px rgba(249, 115, 22, 0.1); }
 
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
-    <div class="bg-[#1a1c2e] w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/5 animate-bottom-up relative">
+    <div id="main_card" class="type-hike bg-[#1a1c2e] w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/5 animate-bottom-up relative">
         <div class="p-6 border-b border-white/5 flex justify-between items-center bg-slate-800/50">
             <div>
                 <h3 class="text-white font-black text-lg tracking-tight uppercase">Notice Generator</h3>
-                <p class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">San:Woori Official</p>
+                <p id="sub_title" class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">San:Woori Official</p>
             </div>
             <button onclick="openAdminAuth()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-gray-400">
                 <span class="material-symbols-outlined text-[24px]">settings</span>
@@ -44,23 +52,23 @@
     <div>
         <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔴 운동 선택</label>
         <div class="flex gap-1.5 mb-2">
-            <input type="radio" name="activity_type" id="type_hike" value="산행" class="hidden peer/hike" checked>
+            <input type="radio" name="activity_type" id="type_hike" value="산행" class="hidden peer/hike" checked onchange="updateTypeUI()">
             <label for="type_hike" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/hike:border-emerald-500/50 peer-checked/hike:bg-emerald-500 peer-checked/hike:text-white transition-all">산행</label>
 
-            <input type="radio" name="activity_type" id="type_run" value="런닝" class="hidden peer/run">
+            <input type="radio" name="activity_type" id="type_run" value="런닝" class="hidden peer/run" onchange="updateTypeUI()">
             <label for="type_run" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/run:border-pink-500/50 peer-checked/run:bg-pink-500 peer-checked/run:text-white transition-all">런닝</label>
 
-            <input type="radio" name="activity_type" id="type_track" value="트래킹" class="hidden peer/track">
+            <input type="radio" name="activity_type" id="type_track" value="트래킹" class="hidden peer/track" onchange="updateTypeUI()">
             <label for="type_track" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/track:border-purple-500/50 peer-checked/track:bg-purple-500 peer-checked/track:text-white transition-all">트래킹</label>
 
-            <input type="radio" name="activity_type" id="type_walk" value="산책" class="hidden peer/walk">
+            <input type="radio" name="activity_type" id="type_walk" value="산책" class="hidden peer/walk" onchange="updateTypeUI()">
             <label for="type_walk" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/walk:border-orange-500/50 peer-checked/walk:bg-orange-500 peer-checked/walk:text-white transition-all">산책</label>
         </div>
 
         <label class="text-[9px] font-black text-gray-500 uppercase tracking-wider ml-1 mb-1 block">🟠 산행지 (☆즐겨찾기)</label>
         <div class="flex items-center gap-2">
-            <div class="relative w-[45%] flex items-center h-[36px]">
-                <input type="text" id="n_mt" placeholder="어디로가요?" autocomplete="off" class="w-full bg-white/5 h-full rounded-xl text-white text-[12px] pl-3 pr-9 focus:ring-1 ring-emerald-500/50">
+            <div class="input-group relative w-[45%] flex items-center h-[36px] bg-white/5 rounded-xl">
+                <input type="text" id="n_mt" placeholder="어디로가요?" autocomplete="off" class="w-full h-full text-white text-[12px] pl-3 pr-9">
                 <button id="btn_fav_toggle" type="button" class="absolute right-2 h-full flex items-center justify-center text-gray-500 hover:text-yellow-400 transition-colors" style="width: 30px;">
                     <span class="material-symbols-outlined text-[20px] select-none" id="fav_icon" style="font-variation-settings: 'FILL' 0, 'wght' 400;">star</span>
                 </button>
@@ -80,7 +88,7 @@
     <div>
         <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block uppercase">🟡 일시</label>
         <div class="flex items-center w-full gap-2">
-            <div class="flex-1 flex items-center bg-white/5 rounded-xl px-3 h-[36px] text-[12px] text-gray-400">
+            <div class="input-group flex-1 flex items-center bg-white/5 rounded-xl px-3 h-[36px] text-[12px] text-gray-400">
                 <input type="number" id="n_month" placeholder="0" class="w-full text-white text-[12px] text-center font-bold">월
                 <input type="number" id="n_day" placeholder="00" class="w-full text-white text-[12px] text-center font-bold">일
             </div>
@@ -88,7 +96,7 @@
                 <span id="txt_ampm" class="text-white text-[10px] font-black tracking-widest group-hover:text-emerald-400">오전</span>
                 <input type="hidden" id="n_ampm" value="오전">
             </div>
-            <div class="w-[105px] flex items-center bg-white/5 rounded-xl px-2 h-[36px] text-[11px] text-gray-400">
+            <div class="input-group w-[105px] flex items-center bg-white/5 rounded-xl px-2 h-[36px] text-[11px] text-gray-400">
                 <input type="number" id="n_hour" placeholder="0" class="w-full text-white text-[12px] text-center font-bold">시
                 <input type="number" id="n_min" placeholder="00" class="w-full text-white text-[12px] text-center font-bold">분
             </div>
@@ -98,50 +106,56 @@
     <div class="grid grid-cols-2 gap-3">
         <div class="flex flex-col">
             <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟢 집결지</label>
-            <input type="text" id="n_meet" placeholder="만남 장소" class="w-full bg-white/5 h-[36px] rounded-xl text-white text-[12px] px-4">
+            <div class="input-group bg-white/5 rounded-xl">
+                <input type="text" id="n_meet" placeholder="만남 장소" class="w-full h-[36px] text-white text-[12px] px-4">
+            </div>
         </div>
         <div class="flex flex-col">
-    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 소요시간</label>
-    <div class="duration-box bg-white/5 h-[36px] rounded-xl flex items-center px-3 gap-1 text-[12px] text-gray-400">
-        <span>약</span>
-        <input type="number" id="n_time_h" placeholder="0" inputmode="numeric" 
-               class="w-8 bg-transparent text-white text-[12px] font-bold text-center outline-none">
-        <span>시간</span>
-        <input type="number" id="n_time_m" placeholder="00" inputmode="numeric" 
-               class="w-8 bg-transparent text-white text-[12px] font-bold text-center outline-none">
-        <span>분</span>
-    </div>
-</div>
+            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 소요시간</label>
+            <div class="input-group duration-box bg-white/5 h-[36px] rounded-xl flex items-center px-3 gap-1 text-[12px] text-gray-400">
+                <span>약</span>
+                <input type="number" id="n_time_h" placeholder="0" inputmode="numeric" class="w-8 bg-transparent text-white text-[12px] font-bold text-center outline-none">
+                <span>시간</span>
+                <input type="number" id="n_time_m" placeholder="00" inputmode="numeric" class="w-8 bg-transparent text-white text-[12px] font-bold text-center outline-none">
+                <span>분</span>
+            </div>
+        </div>
     </div>
 
     <div>
         <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 산행코스 (스페이스 3번 = ' - ')</label>
-        <input type="text" id="n_course" placeholder='코스를 입력하세요' class="w-full bg-white/5 h-[36px] rounded-xl text-white text-[12px] px-4">
+        <div class="input-group bg-white/5 rounded-xl">
+            <input type="text" id="n_course" placeholder='코스를 입력하세요' class="w-full h-[36px] text-white text-[12px] px-4">
+        </div>
     </div>
 
     <div class="grid grid-cols-2 gap-3">
         <div class="flex flex-col">
             <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 거리</label>
-            <div class="flex items-center bg-white/5 rounded-xl pr-4 h-[36px]">
+            <div class="input-group flex items-center bg-white/5 rounded-xl pr-4 h-[36px]">
                 <input type="number" id="n_dist" step="0.1" inputmode="decimal" class="w-full text-white text-[12px] text-right px-2 font-bold">
                 <span class="text-[12px] text-gray-600 font-black">km</span>
             </div>
         </div>
         <div class="flex flex-col">
             <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟤 난이도</label>
-            <select id="n_lv" class="w-full h-[36px] bg-slate-800 px-3 rounded-xl text-white text-[11px] font-bold">
-                <option value="하 (쉬움)">하 (쉬움)</option>
-                <option value="중하 (평범)">중하 (평범)</option>
-                <option value="중 (약간힘듦)">중 (약간힘듦)</option>
-                <option value="중상 (힘듦)">중상 (힘듦)</option>
-                <option value="상 (매우힘듦)">상 (매우힘듦)</option>
-            </select>
+            <div class="input-group bg-slate-800 rounded-xl">
+                <select id="n_lv" class="w-full h-[36px] px-3 text-white text-[11px] font-bold">
+                    <option value="하 (쉬움)">하 (쉬움)</option>
+                    <option value="중하 (평범)">중하 (평범)</option>
+                    <option value="중 (약간힘듦)">중 (약간힘듦)</option>
+                    <option value="중상 (힘듦)">중상 (힘듦)</option>
+                    <option value="상 (매우힘듦)">상 (매우힘듦)</option>
+                </select>
+            </div>
         </div>
     </div>
 
     <div>
         <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚫️ 준비물</label>
-        <input type="text" id="n_etc" value="물, 간식, 기타" class="w-full bg-white/5 h-[36px] rounded-xl text-white text-[12px] px-4">
+        <div class="input-group bg-white/5 rounded-xl">
+            <input type="text" id="n_etc" value="물, 간식, 기타" class="w-full h-[36px] text-white text-[12px] px-4">
+        </div>
     </div>
 </div>
 
@@ -177,6 +191,50 @@
     </div>
 
      <script type="module">
+
+        // 1. 운동 타입 선택 시 색상 테마 변경 함수
+window.updateTypeUI = () => {
+    const type = document.querySelector('input[name="activity_type"]:checked').value;
+    const mainCard = document.getElementById('main_card');
+    
+    // 기존 색상 클래스 다 지우기
+    mainCard.classList.remove('type-hike', 'type-run', 'type-track', 'type-walk');
+
+    // 선택한 타입에 맞는 클래스 넣기
+    if (type === '산행') mainCard.classList.add('type-hike');
+    else if (type === '런닝') mainCard.classList.add('type-run');
+    else if (type === '트래킹') mainCard.classList.add('type-track');
+    else if (type === '산책') mainCard.classList.add('type-walk');
+    
+    checkAllInputs(); // 색상 바뀔 때 테두리 즉시 업데이트
+};
+
+// 2. 입력창에 글자가 있는지 체크해서 테두리 켜주는 함수
+const checkAllInputs = () => {
+    const groups = document.querySelectorAll('.input-group');
+    groups.forEach(group => {
+        const inputs = group.querySelectorAll('input, select');
+        let hasValue = false;
+        
+        inputs.forEach(i => {
+            // 값이 비어있지 않거나 0이 아니면 '입력됨'으로 간주
+            if (i.value && i.value.trim() !== "" && i.value !== "0") hasValue = true;
+        });
+
+        if (hasValue) group.classList.add('has-value');
+        else group.classList.remove('has-value');
+    });
+};
+
+// 3. 페이지가 열릴 때 감시 시작
+document.addEventListener('DOMContentLoaded', () => {
+    // 모든 input에 입력할 때마다 체크하도록 이벤트 연결
+    document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', checkAllInputs);
+    });
+    updateTypeUI(); // 첫 화면 세팅
+});
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
     import { getFirestore, doc, getDoc, getDocs, setDoc, deleteDoc, collection, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
