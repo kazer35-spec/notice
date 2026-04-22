@@ -428,55 +428,63 @@ const initInputs = () => {
 
     // [6] 버튼 동작 로직
     document.getElementById('btn_generate').onclick = async () => {
-        // 1. 선택된 타입 가져오기
+    // 1. 선택된 타입 및 해당 타입에 따른 명칭 설정
     const type = document.querySelector('input[name="activity_type"]:checked').value;
-        const mt = document.getElementById('n_mt').value.trim() || '미정';
-        const pickupOpt = document.querySelector('input[name="n_pickup"]:checked');
-        let pTag = pickupOpt ? ` ${pickupOpt.value}` : "";
-        let pNotice = (pickupOpt && pickupOpt.id === 'p_ok') ? `\n💢일자, 시간, 장소 조율 가능합니다\n 차량 픽업 관련 문의 서브방에 입장해주세요` : "";
-        
-        const m = document.getElementById('n_month').value; 
-        const d = document.getElementById('n_day').value;
-        const ampm = document.getElementById('n_ampm').value; 
-        const h = document.getElementById('n_hour').value;
-        const min = document.getElementById('n_min').value || "00";
-        const meet = document.getElementById('n_meet').value || '추후 공지';
-        const th = document.getElementById('n_time_h').value; 
+    
+    // 타입별 명칭 매핑 객체
+    const typeLabels = {
+        "산행": { spot: "산행지", course: "산행코스" },
+        "런닝": { spot: "런닝스팟", course: "런닝코스" },
+        "트래킹": { spot: "탐방로", course: "탐방코스" },
+        "산책": { spot: "산책로", course: "산책코스" }
+    };
+    
+    const labels = typeLabels[type] || typeLabels["산행"];
+
+    const mt = document.getElementById('n_mt').value.trim() || '미정';
+    const pickupOpt = document.querySelector('input[name="n_pickup"]:checked');
+    let pTag = pickupOpt ? ` ${pickupOpt.value}` : "";
+    let pNotice = (pickupOpt && pickupOpt.id === 'p_ok') ? `\n💢일자, 시간, 장소 조율 가능합니다\n 차량 픽업 관련 문의 서브방에 입장해주세요` : "";
+    
+    const m = document.getElementById('n_month').value; 
+    const d = document.getElementById('n_day').value;
+    const ampm = document.getElementById('n_ampm').value; 
+    const h = document.getElementById('n_hour').value;
+    const min = document.getElementById('n_min').value || "00";
+    const meet = document.getElementById('n_meet').value || '추후 공지';
+    const th = document.getElementById('n_time_h').value; 
     const tm = document.getElementById('n_time_m').value;
     
-    // [수정된 소요시간 로직] 시간 혹은 분 중 하나만 있어도 표시되게 변경
     let dur = "미정";
     if (th || tm) {
         const hourPart = th ? `${th}시간` : "";
         const minPart = tm ? ` ${tm}분` : "";
         dur = `약 ${hourPart}${minPart}`.trim();
     }
-        const course = document.getElementById('n_course').value || '미정';
-        const dist = document.getElementById('n_dist').value ? `${document.getElementById('n_dist').value}km` : '미정';
-        const lv = document.getElementById('n_lv').value; 
-        const etc = document.getElementById('n_etc').value;
+    
+    const course = document.getElementById('n_course').value || '미정';
+    const dist = document.getElementById('n_dist').value ? `${document.getElementById('n_dist').value}km` : '미정';
+    const lv = document.getElementById('n_lv').value; 
+    const etc = document.getElementById('n_etc').value;
 
-        const safety = `💢산행시 일어나는 모든 사건 사고는 본인의 \n 책임이므로 안전에 유의하여 산행하세요\n💢우천, 강풍 등 기상 악화 시 안전을 위해서 \n 모임이 취소될 수 있습니다\n💢참석자 유무 상황에 따라 시간 변경 및 \n 일정 취소될 수 있습니다`;
-             // 공지 템플릿 생성
-    const template = `[산:우리 ${type} 공지]\n🔴${type}지: ${mt}${pTag}\n🟠일시: ${m}월 ${d}일 ${ampm} ${h}시 ${min}분\n🟡집결지: ${meet}\n🟢소요시간: ${dur}\n🔵${type}코스: ${course}\n⚪️거리: ${dist}\n🟣난이도: ${lv}\n🟤준비물: ${etc}\n\n${safety}${pNotice}`;
+    const safety = `💢산행시 일어나는 모든 사건 사고는 본인의 \n 책임이므로 안전에 유의하여 산행하세요\n💢우천, 강풍 등 기상 악화 시 안전을 위해서 \n 모임이 취소될 수 있습니다\n💢참석자 유무 상황에 따라 시간 변경 및 \n 일정 취소될 수 있습니다`;
 
-    // 화면 업데이트
+    // 2. 동적으로 변경된 labels(spot, course) 적용
+    const template = `[산:우리 ${type} 공지]\n🔴${labels.spot}: ${mt}${pTag}\n🟠일시: ${m}월 ${d}일 ${ampm} ${h}시 ${min}분\n🟡집결지: ${meet}\n🟢소요시간: ${dur}\n🔵${labels.course}: ${course}\n⚪️거리: ${dist}\n🟣난이도: ${lv}\n🟤준비물: ${etc}\n\n${safety}${pNotice}`;
+
+    // 화면 업데이트 및 스크롤
     document.getElementById('n_final_text').innerText = template;
     const resultBox = document.getElementById('n_result_box');
     resultBox.classList.remove('hidden');
 
-    // [수정된 스크롤 로직] 복사 버튼이 있는 하단으로 부드럽게 이동
     setTimeout(() => {
         resultBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }, 100);
 
-        // [수정본] DB 저장 로직: 선택된 타입(런닝/산책 등)을 함께 저장합니다.
+    // DB 저장 로직 (생략 방지를 위해 유지)
     if(mt !== '미정') {
-        // 현재 체크된 버튼의 값을 다시 한번 가져옵니다.
-        const currentType = document.querySelector('input[name="activity_type"]:checked').value;
-
         await setDoc(doc(db, "mountain_drafts", mt), {
-            type: currentType, // '런닝', '산책', '트래킹', '산행' 중 하나가 저장됨
+            type: type,
             meet, 
             time_h: th, 
             time_m: tm, 
@@ -489,6 +497,7 @@ const initInputs = () => {
         await syncMountains(); 
     }
 };
+
          
     document.getElementById('btn_copy').onclick = () => {
         const finalText = document.getElementById('n_final_text').innerText;
