@@ -431,12 +431,12 @@ const initInputs = () => {
     // 1. 선택된 타입 및 해당 타입에 따른 명칭 설정
     const type = document.querySelector('input[name="activity_type"]:checked').value;
     
-    // 타입별 명칭 매핑 객체
+    // 타입별 명칭 및 안전 문구 매핑
     const typeLabels = {
-        "산행": { spot: "산행지", course: "산행코스" },
-        "런닝": { spot: "주로", course: "런닝코스" },
-        "트래킹": { spot: "탐방로", course: "탐방코스" },
-        "산책": { spot: "산책로", course: "산책코스" }
+        "산행": { spot: "산행지", course: "산행코스", safetyWord: "산행" },
+        "런닝": { spot: "런닝스팟", course: "런닝코스", safetyWord: "런닝" },
+        "트래킹": { spot: "탐방로", course: "탐방코스", safetyWord: "트레킹" },
+        "산책": { spot: "산책로", course: "산책코스", safetyWord: "산책" }
     };
     
     const labels = typeLabels[type] || typeLabels["산행"];
@@ -467,9 +467,10 @@ const initInputs = () => {
     const lv = document.getElementById('n_lv').value; 
     const etc = document.getElementById('n_etc').value;
 
-    const safety = `💢산행시 일어나는 모든 사건 사고는 본인의 \n 책임이므로 안전에 유의하여 산행하세요\n💢우천, 강풍 등 기상 악화 시 안전을 위해서 \n 모임이 취소될 수 있습니다\n💢참석자 유무 상황에 따라 시간 변경 및 \n 일정 취소될 수 있습니다`;
+    // 동적으로 변경되는 안전 주의사항 문구
+    const safety = `💢${labels.safetyWord}시 일어나는 모든 사건 사고는 본인의 \n 책임이므로 안전에 유의하여 ${labels.safetyWord}하세요\n💢우천, 강풍 등 기상 악화 시 안전을 위해서 \n 모임이 취소될 수 있습니다\n💢참석자 유무 상황에 따라 시간 변경 및 \n 일정 취소될 수 있습니다`;
 
-    // 2. 동적으로 변경된 labels(spot, course) 적용
+    // 공지 템플릿 생성
     const template = `[산:우리 ${type} 공지]\n🔴${labels.spot}: ${mt}${pTag}\n🟠일시: ${m}월 ${d}일 ${ampm} ${h}시 ${min}분\n🟡집결지: ${meet}\n🟢소요시간: ${dur}\n🔵${labels.course}: ${course}\n⚪️거리: ${dist}\n🟣난이도: ${lv}\n🟤준비물: ${etc}\n\n${safety}${pNotice}`;
 
     // 화면 업데이트 및 스크롤
@@ -481,7 +482,7 @@ const initInputs = () => {
         resultBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }, 100);
 
-    // DB 저장 로직 (생략 방지를 위해 유지)
+    // DB 저장
     if(mt !== '미정') {
         await setDoc(doc(db, "mountain_drafts", mt), {
             type: type,
@@ -497,6 +498,7 @@ const initInputs = () => {
         await syncMountains(); 
     }
 };
+
 
          
     document.getElementById('btn_copy').onclick = () => {
