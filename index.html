@@ -276,46 +276,91 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('n_lv').value = d.lv || '하 (쉬움)';
 };
 
+// [2] 리스트 렌더링 (즐겨찾기 및 메인/서브 계층 구조 적용)
+const renderSelectOptions = () => {
+    const select = document.getElementById('official_mt_select');
+    if (!select) return;
 
-    // [2] 리스트 렌더링 (즐겨찾기 포함)
-    const renderSelectOptions = () => {
-        const select = document.getElementById('official_mt_select');
-        if (!select) return;
+    const favs = getFavorites(); 
+    const favoriteItems = cachedMountains.filter(m => favs.includes(m.id));
+    const normalItems = cachedMountains.filter(m => !favs.includes(m.id) && m.type === 'official' && m.meet && m.meet !== "추후 공지");
 
-        const favs = getFavorites(); 
-        const favoriteItems = cachedMountains.filter(m => favs.includes(m.id));
-        const normalItems = cachedMountains.filter(m => !favs.includes(m.id));
+    select.innerHTML = '<option value="" class="text-[9px] text-gray-400">⛰️ 등록 명산</option>';
 
-        select.innerHTML = '<option value="">⛰️등록 명산</option>';
+    // 1. 즐겨찾기 섹션
+    if (favoriteItems.length > 0) {
+        const favGroup = document.createElement('optgroup');
+        favGroup.label = "⭐ 즐겨찾기";
+        favGroup.className = "bg-slate-900 text-yellow-400 text-[9px] font-bold";
 
-        if (favoriteItems.length > 0) {
-            const groupLabel = document.createElement('option');
-            groupLabel.textContent = "--- 즐겨찾기 ⭐ ---";
-            groupLabel.disabled = true;
-            select.appendChild(groupLabel);
-
-            favoriteItems.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.id;
-                opt.innerText = `⭐ ${m.id}`;
-                select.appendChild(opt);
-            });
-
-            const line = document.createElement('option');
-            line.textContent = "------------------";
-            line.disabled = true;
-            select.appendChild(line);
-        }
-
-        normalItems.forEach(m => {
-            if(m.type === 'official' && m.meet && m.meet !== "추후 공지") {
-                const opt = document.createElement('option');
-                opt.value = m.id;
-                opt.innerText = m.id;
-                select.appendChild(opt);
-            }
+        favoriteItems.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m.id;
+            opt.innerText = `⭐ ${m.id}`;
+            opt.className = "bg-slate-800 text-white text-[10px] py-0.5";
+            favGroup.appendChild(opt);
         });
-    };
+        select.appendChild(favGroup);
+    }
+
+    // 2. 일반 목록 (메인 / 서브 그룹화 로직)
+    const groups = {};
+    const standalone = [];
+
+    // 산 이름을 분석하여 메인산과 서브 코스 분류
+    normalItems.forEach(m => {
+        const parts = m.id.split(' ');
+        if (parts.length > 1) {
+            const mainName = parts[0]; // 예: '지리산'
+            if (!groups[mainName]) groups[mainName] = [];
+            groups[mainName].push(m);
+        } else {
+            // 단일 산 명칭 처리
+            if (!groups[m.id]) groups[m.id] = [];
+            groups[m.id].push(m);
+        }
+    });
+
+    const generalGroup = document.createElement('optgroup');
+    generalGroup.label = "🏔️ 전체 산 목록";
+    generalGroup.className = "bg-slate-900 text-emerald-400 text-[9px] font-bold";
+
+    // 가나다 순 정렬 후 렌더링
+    Object.keys(groups).sort((a, b) => a.localeCompare(b, 'ko')).forEach(mainKey => {
+        const items = groups[mainKey];
+
+        // 서브 항목이 없는 단독 산인 경우
+        if (items.length === 1 && items[0].id === mainKey) {
+            const opt = document.createElement('option');
+            opt.value = items[0].id;
+            opt.innerText = `• ${items[0].id}`;
+            opt.className = "bg-slate-800 text-gray-200 text-[10px] py-0.5";
+            generalGroup.appendChild(opt);
+        } else {
+            // 메인산 항목 및 서브 항목 출력
+            items.sort((a, b) => a.id.localeCompare(b.id, 'ko')).forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                
+                if (m.id === mainKey) {
+                    // 메인산 (예: 지리산)
+                    opt.innerText = `📌 ${m.id} (전체/대표)`;
+                    opt.className = "bg-slate-800 text-sky-300 font-bold text-[10px] py-0.5";
+                } else {
+                    // 서브산/코스 (예: 지리산 노고단 -> └ 노고단)
+                    const subName = m.id.replace(mainKey, '').trim();
+                    opt.innerText = `\u00A0\u00A0└ ${subName}`;
+                    opt.className = "bg-slate-800 text-gray-300 text-[9px] py-0.5";
+                }
+                generalGroup.appendChild(opt);
+            });
+        }
+    });
+
+    select.appendChild(generalGroup);
+};
+
+    
 
     // [3] 데이터 동기화
     const syncMountains = async () => {
