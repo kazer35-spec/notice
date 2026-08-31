@@ -427,6 +427,7 @@ const initInputs = () => {
     window.closeAdminModal = () => { document.getElementById('admin_modal').style.display = 'none'; };
 
     // [6] 버튼 동작 로직
+    
     document.getElementById('btn_generate').onclick = async () => {
     // 1. 선택된 타입 및 해당 타입에 따른 명칭 설정
     const type = document.querySelector('input[name="activity_type"]:checked').value;
@@ -482,6 +483,17 @@ const initInputs = () => {
         resultBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }, 100);
 
+    // ✨ [추가됨] 클립보드 자동 복사 기능
+    try {
+        await navigator.clipboard.writeText(template);
+        const btnGen = document.getElementById('btn_generate');
+        const originalGenText = btnGen.innerText;
+        btnGen.innerText = "✨ 일정 생성 완료 & 복사됨! ✨";
+        setTimeout(() => { btnGen.innerText = originalGenText; }, 1500);
+    } catch (err) {
+        console.error("클립보드 자동 복사 실패:", err);
+    }
+
     // DB 저장
     if(mt !== '미정') {
         await setDoc(doc(db, "mountain_drafts", mt), {
@@ -499,6 +511,7 @@ const initInputs = () => {
     }
 };
 
+    
 
          
     document.getElementById('btn_copy').onclick = () => {
