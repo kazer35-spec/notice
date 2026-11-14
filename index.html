@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>산:우리 일정 생성기</title>
-    <!-- 카카오톡 인앱 브라우저 감지 시 외부 기본 브라우저로 띄우는 스크립트 -->
+    <!-- [수정됨] 이미 openExternalBrowser 파라미터가 없을 때만 한 번 외부 브라우저로 띄우도록 수정 -->
     <script>
         (function() {
             var ua = navigator.userAgent.toLowerCase();
-            // 카카오톡 인앱 브라우저인 경우
             if (ua.indexOf('kakaotalk') !== -1) {
                 var currentUrl = window.location.href;
-                // 외부 브라우저 강제 오픈 프로토콜 적용 (카카오톡 내장 기능)
-                if (currentUrl.indexOf('?') !== -1) {
-                    location.href = currentUrl + '&openExternalBrowser=1';
-                } else {
-                    location.href = currentUrl + '?openExternalBrowser=1';
+                if (currentUrl.indexOf('openExternalBrowser=1') === -1) {
+                    if (currentUrl.indexOf('?') !== -1) {
+                        location.href = currentUrl + '&openExternalBrowser=1';
+                    } else {
+                        location.href = currentUrl + '?openExternalBrowser=1';
+                    }
                 }
             }
         })();
@@ -186,7 +186,7 @@
         </div>
     </div>
 
-    <!-- 등록 명산 모달 (메인 창 크기와 동일하게 max-w-md 적용) -->
+    <!-- 등록 명산 모달 (메인 창과 동일한 크기 유지) -->
     <div id="mt_modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="if(event.target === this) closeMtModal()">
         <div class="bg-[#1a1c2e] w-full max-w-md h-[80vh] rounded-[2.5rem] border border-white/5 shadow-2xl flex flex-col overflow-hidden animate-bottom-up">
             
@@ -718,7 +718,7 @@
                     </div>
                     <div class="flex gap-2">
                         ${type === '산행' ? `<button onclick="approveMt('${d.id}')" class="bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">승인</button>` : ''}
-                        <button onclick="deleteDraft('${d.id}')" class="bg-red-600/20 text-red-400 border border-red-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">삭제*/버튼</button>
+                        <button onclick="deleteDraft('${d.id}')" class="bg-red-600/20 text-red-400 border border-red-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">삭제</button>
                     </div>`;
                 list_el.appendChild(div);
             });
@@ -798,7 +798,7 @@
                     if (isWait) {
                         timers[item.key] = setTimeout(() => { if(cEl.value === val) nEl.focus(); }, 2000);
                     } else if (parseInt(val) >= 2 && parseInt(val) <= 9) {
-                    	nEl.focus();
+                        nEl.focus();
                     }
                 });
             });
@@ -813,7 +813,7 @@
         document.getElementById('btn_fav_toggle').onclick = () => {
             const mtName = document.getElementById('n_mt').value.trim();
             if (!mtName || mtName === '미정') return;
-            window.ownerToggleFavorite(mtName);
+            window.toggleFavorite(mtName);
             updateFavIcon();
         };
     </script>
