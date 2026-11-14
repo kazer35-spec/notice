@@ -4,28 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>산:우리 일정 생성기</title>
-    <!-- [수정됨] 카카오톡 등 인앱 브라우저 감지 시 기본 브라우저 스킴으로 강제 실행 -->
+    <!-- [적용 완료] 카카오톡 인앱 브라우저 외부 기본 브라우저 강제 실행 스크립트 -->
     <script>
         (function() {
-            var ua = navigator.userAgent.toLowerCase();
-            var url = window.location.href;
-            
-            // 이미 외부 브라우저이거나 파라미터가 있으면 중복 실행 방지
-            if (url.indexOf('openExternalBrowser=1') !== -1) return;
+          var userAgent = navigator.userAgent.toLowerCase();
+          var targetUrl = location.href;
 
-            if (ua.indexOf('kakaotalk') !== -1) {
-                // 카카오톡 인앱 브라우저인 경우 외부 브라우저 파라미터 추가 시도
-                if (url.indexOf('?') !== -1) {
-                    location.href = url + '&openExternalBrowser=1';
-                } else {
-                    location.href = url + '?openExternalBrowser=1';
-                }
-            } else if (ua.indexOf('naver') !== -1 || ua.indexOf('instagram') !== -1 || ua.indexOf('fbav') !== -1) {
-                // 안드로이드 환경에서 네이버, 인스타, 페이스북 등 인앱일 경우 Intent 스킴으로 기본 브라우저 호출
-                if (navigator.userAgent.match(/android/i)) {
-                    location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end;';
-                }
+          if (userAgent.indexOf('kakaotalk') > -1) {
+            if (userAgent.indexOf('android') > -1) {
+              var parsedUrl = targetUrl.replace(/^https?:\/\//, '');
+              location.href = 'intent://' + parsedUrl + '#Intent;scheme=https;package=com.android.chrome;end';
+            } else if (userAgent.indexOf('iphone') > -1 || userAgent.indexOf('ipad') > -1 || userAgent.indexOf('ipod') > -1) {
+              location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(targetUrl);
             }
+          }
         })();
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -194,7 +186,7 @@
         </div>
     </div>
 
-    <!-- 등록 명산 모달 -->
+    <!-- 등록 명산 모달 (메인 창과 동일한 max-w-md 크기 및 둥글기 적용) -->
     <div id="mt_modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" onclick="if(event.target === this) closeMtModal()">
         <div class="bg-[#1a1c2e] w-full max-w-md h-[80vh] rounded-[2.5rem] border border-white/5 shadow-2xl flex flex-col overflow-hidden animate-bottom-up">
             
@@ -307,6 +299,7 @@
         const CHOSUNG_LIST = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
         const CHOSUNG_NORMALIZE = { 'ㄲ': 'ㄱ', 'ㄸ': 'ㄷ', 'ㅃ': 'ㅂ', 'ㅆ': 'ㅅ', 'ㅉ': 'ㅈ' };
         
+        // 연계, 종주는 '#' 탭으로 묶어서 맨 하단에 표시
         const INDEX_TABS = ['⭐', 'ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ', '#'];
 
         const getChosung = (str) => {
