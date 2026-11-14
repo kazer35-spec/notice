@@ -9,10 +9,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0f101a; color: white; -webkit-tap-highlight-color: transparent; }
-        .animate-bottom-up { animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-bottom-up { animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         input, select { border: none !important; outline: none !important; background: transparent; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -32,7 +34,6 @@
         .type-run .has-value { border-color: rgba(236, 72, 153, 0.5) !important; box-shadow: 0 0 10px rgba(236, 72, 153, 0.1); }
         .type-track .has-value { border-color: rgba(168, 85, 247, 0.5) !important; box-shadow: 0 0 10px rgba(168, 85, 247, 0.1); }
         .type-walk .has-value { border-color: rgba(249, 115, 22, 0.5) !important; box-shadow: 0 0 10px rgba(249, 115, 22, 0.1); }
-
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -49,128 +50,177 @@
         </div>
 
         <div class="p-4 max-h-[75vh] overflow-y-auto space-y-2 custom-scrollbar">
-    <div>
-        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔴 운동 선택</label>
-        <div class="flex gap-1.5 mb-2">
-            <input type="radio" name="activity_type" id="type_hike" value="산행" class="hidden peer/hike" checked onchange="updateTypeUI()">
-            <label for="type_hike" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/hike:border-emerald-500/50 peer-checked/hike:bg-emerald-500 peer-checked/hike:text-white transition-all">등산</label>
+            <div>
+                <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔴 운동 선택</label>
+                <div class="flex gap-1.5 mb-2">
+                    <input type="radio" name="activity_type" id="type_hike" value="산행" class="hidden peer/hike" checked onchange="updateTypeUI()">
+                    <label for="type_hike" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/hike:border-emerald-500/50 peer-checked/hike:bg-emerald-500 peer-checked/hike:text-white transition-all">등산</label>
 
-            <input type="radio" name="activity_type" id="type_run" value="런닝" class="hidden peer/run" onchange="updateTypeUI()">
-            <label for="type_run" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/run:border-pink-500/50 peer-checked/run:bg-pink-500 peer-checked/run:text-white transition-all">런닝</label>
+                    <input type="radio" name="activity_type" id="type_run" value="런닝" class="hidden peer/run" onchange="updateTypeUI()">
+                    <label for="type_run" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/run:border-pink-500/50 peer-checked/run:bg-pink-500 peer-checked/run:text-white transition-all">런닝</label>
 
-            <input type="radio" name="activity_type" id="type_track" value="트래킹" class="hidden peer/track" onchange="updateTypeUI()">
-            <label for="type_track" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/track:border-purple-500/50 peer-checked/track:bg-purple-500 peer-checked/track:text-white transition-all">트래킹</label>
+                    <input type="radio" name="activity_type" id="type_track" value="트래킹" class="hidden peer/track" onchange="updateTypeUI()">
+                    <label for="type_track" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/track:border-purple-500/50 peer-checked/track:bg-purple-500 peer-checked/track:text-white transition-all">트래킹</label>
 
-            <input type="radio" name="activity_type" id="type_walk" value="산책" class="hidden peer/walk" onchange="updateTypeUI()">
-            <label for="type_walk" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/walk:border-orange-500/50 peer-checked/walk:bg-orange-500 peer-checked/walk:text-white transition-all">산책</label>
+                    <input type="radio" name="activity_type" id="type_walk" value="산책" class="hidden peer/walk" onchange="updateTypeUI()">
+                    <label for="type_walk" class="flex-1 py-1.5 rounded-xl text-[11px] font-black text-center cursor-pointer border border-white/10 bg-transparent text-gray-500 peer-checked/walk:border-orange-500/50 peer-checked/walk:bg-orange-500 peer-checked/walk:text-white transition-all">산책</label>
+                </div>
+
+                <label class="text-[9px] font-black text-gray-500 uppercase tracking-wider ml-1 mb-1 block">🟠 산행지 (☆즐겨찾기)</label>
+                <div class="flex items-center gap-2">
+                    <div class="input-group relative w-[45%] flex items-center h-[36px] bg-white/5 rounded-xl">
+                        <input type="text" id="n_mt" placeholder="어디로가요?" autocomplete="off" class="w-full h-full text-white text-[12px] pl-3 pr-9">
+                        <button id="btn_fav_toggle" type="button" class="absolute right-2 h-full flex items-center justify-center text-gray-500 hover:text-yellow-400 transition-colors" style="width: 30px;">
+                            <span class="material-symbols-outlined text-[20px] select-none" id="fav_icon" style="font-variation-settings: 'FILL' 0, 'wght' 400;">star</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 세련된 등록 명산 모달 오픈 버튼 -->
+                    <button type="button" onclick="openMtModal()" class="w-[30%] h-[36px] bg-gradient-to-r from-slate-800 to-slate-800/80 hover:from-emerald-950/60 hover:to-slate-800 border border-white/10 hover:border-emerald-500/40 rounded-xl text-white text-[10px] font-bold px-2 flex items-center justify-center gap-1 transition-all active:scale-95 shadow-sm">
+                        <span>⛰️</span>
+                        <span class="truncate">등록 명산</span>
+                    </button>
+
+                    <div class="w-[25%] flex items-center p-0.5 bg-white/5 rounded-xl border border-white/5 h-[36px]">
+                        <input type="radio" name="n_pickup" id="p_ok" value="(픽업 가능)" class="hidden peer/ok">
+                        <label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-lg text-[9px] font-black text-gray-400 cursor-pointer peer-checked/ok:bg-blue-600 peer-checked/ok:text-white">픽업</label>
+                        <input type="radio" name="n_pickup" id="p_no" value="(픽업 불가)" class="hidden peer/no">
+                        <label for="p_no" class="flex-1 h-full flex items-center justify-center rounded-lg text-[9px] font-black text-gray-400 cursor-pointer peer-checked/no:bg-red-600 peer-checked/no:text-white">불가</label>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block uppercase">🟡 일시</label>
+                <div class="flex items-center w-full gap-2">
+                    <div class="input-group flex-1 flex items-center bg-white/5 rounded-xl px-3 h-[36px] text-[12px] text-gray-400">
+                        <input type="number" id="n_month" placeholder="0" class="w-full text-white text-[12px] text-center font-bold">월
+                        <input type="number" id="n_day" placeholder="00" class="w-full text-white text-[12px] text-center font-bold">일
+                    </div>
+                    <div id="btn_ampm_toggle" class="w-[70px] h-[36px] bg-slate-800 rounded-xl flex items-center justify-center cursor-pointer border border-white/5 select-none transition-all active:scale-95 group">
+                        <span id="txt_ampm" class="text-white text-[10px] font-black tracking-widest group-hover:text-emerald-400">오전</span>
+                        <input type="hidden" id="n_ampm" value="오전">
+                    </div>
+                    <div class="input-group w-[105px] flex items-center bg-white/5 rounded-xl px-2 h-[36px] text-[11px] text-gray-400">
+                        <input type="number" id="n_hour" placeholder="0" class="w-full text-white text-[12px] text-center font-bold">시
+                        <input type="number" id="n_min" placeholder="00" class="w-full text-white text-[12px] text-center font-bold">분
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col">
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟢 집결지</label>
+                    <div class="input-group bg-white/5 rounded-xl">
+                        <input type="text" id="n_meet" placeholder="만남 장소" class="w-full h-[36px] text-white text-[12px] px-4">
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 소요시간</label>
+                    <div class="input-group duration-box bg-white/5 h-[36px] rounded-xl flex items-center px-3 gap-1 text-[12px] text-gray-400">
+                        <span>약</span>
+                        <input type="number" id="n_time_h" placeholder="0" inputmode="numeric" class="w-8 bg-transparent text-white text-[12px] font-bold text-center outline-none">
+                        <span>시간</span>
+                        <input type="number" id="n_time_m" placeholder="00" inputmode="numeric" class="w-8 bg-transparent text-white text-[12px] font-bold text-center outline-none">
+                        <span>분</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 산행코스 (스페이스 2번 = ' - ')</label>
+                <div class="input-group bg-white/5 rounded-xl">
+                    <input type="text" id="n_course" placeholder='코스를 입력하세요' class="w-full h-[36px] text-white text-[12px] px-4">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col">
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 거리</label>
+                    <div class="input-group flex items-center bg-white/5 rounded-xl pr-4 h-[36px]">
+                        <input type="number" id="n_dist" step="0.1" inputmode="decimal" class="w-full text-white text-[12px] text-right px-2 font-bold">
+                        <span class="text-[12px] text-gray-600 font-black">km</span>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟤 난이도</label>
+                    <div class="input-group bg-slate-800 rounded-xl">
+                        <select id="n_lv" class="w-full h-[36px] px-3 text-white text-[11px] font-bold">
+                            <option value="하 (쉬움)">하 (쉬움)</option>
+                            <option value="중하 (평범)">중하 (평범)</option>
+                            <option value="중 (약간힘듦)">중 (약간힘듦)</option>
+                            <option value="중상 (힘듦)">중상 (힘듦)</option>
+                            <option value="상 (매우힘듦)">상 (매우힘듦)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚫️ 준비물</label>
+                <div class="input-group bg-white/5 rounded-xl">
+                    <input type="text" id="n_etc" value="물, 간식, 기타" class="w-full h-[36px] text-white text-[12px] px-4">
+                </div>
+            </div>
         </div>
 
-        <label class="text-[9px] font-black text-gray-500 uppercase tracking-wider ml-1 mb-1 block">🟠 산행지 (☆즐겨찾기)</label>
-        <div class="flex items-center gap-2">
-            <div class="input-group relative w-[45%] flex items-center h-[36px] bg-white/5 rounded-xl">
-                <input type="text" id="n_mt" placeholder="어디로가요?" autocomplete="off" class="w-full h-full text-white text-[12px] pl-3 pr-9">
-                <button id="btn_fav_toggle" type="button" class="absolute right-2 h-full flex items-center justify-center text-gray-500 hover:text-yellow-400 transition-colors" style="width: 30px;">
-                    <span class="material-symbols-outlined text-[20px] select-none" id="fav_icon" style="font-variation-settings: 'FILL' 0, 'wght' 400;">star</span>
-                </button>
-            </div>
-            <select id="official_mt_select" class="w-[30%] h-[36px] bg-slate-800 border border-white/10 rounded-xl text-white text-[10px] text-center font-bold px-1 appearance-none">
-                <option value="">⛰️불러오기</option>
-            </select>
-            <div class="w-[25%] flex items-center p-0.5 bg-white/5 rounded-xl border border-white/5 h-[36px]">
-                <input type="radio" name="n_pickup" id="p_ok" value="(픽업 가능)" class="hidden peer/ok">
-                <label for="p_ok" class="flex-1 h-full flex items-center justify-center rounded-lg text-[9px] font-black text-gray-400 cursor-pointer peer-checked/ok:bg-blue-600 peer-checked/ok:text-white">픽업</label>
-                <input type="radio" name="n_pickup" id="p_no" value="(픽업 불가)" class="hidden peer/no">
-                <label for="p_no" class="flex-1 h-full flex items-center justify-center rounded-lg text-[9px] font-black text-gray-400 cursor-pointer peer-checked/no:bg-red-600 peer-checked/no:text-white">불가</label>
-            </div>
-        </div>
-    </div>
+        <div class="px-4 pb-5">
+            <button id="btn_generate" class="neon-btn w-full h-[54px] mt-1 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-tighter">✨ 일정 생성 & 안전 저장</button>
 
-    <div>
-        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block uppercase">🟡 일시</label>
-        <div class="flex items-center w-full gap-2">
-            <div class="input-group flex-1 flex items-center bg-white/5 rounded-xl px-3 h-[36px] text-[12px] text-gray-400">
-                <input type="number" id="n_month" placeholder="0" class="w-full text-white text-[12px] text-center font-bold">월
-                <input type="number" id="n_day" placeholder="00" class="w-full text-white text-[12px] text-center font-bold">일
-            </div>
-            <div id="btn_ampm_toggle" class="w-[70px] h-[36px] bg-slate-800 rounded-xl flex items-center justify-center cursor-pointer border border-white/5 select-none transition-all active:scale-95 group">
-                <span id="txt_ampm" class="text-white text-[10px] font-black tracking-widest group-hover:text-emerald-400">오전</span>
-                <input type="hidden" id="n_ampm" value="오전">
-            </div>
-            <div class="input-group w-[105px] flex items-center bg-white/5 rounded-xl px-2 h-[36px] text-[11px] text-gray-400">
-                <input type="number" id="n_hour" placeholder="0" class="w-full text-white text-[12px] text-center font-bold">시
-                <input type="number" id="n_min" placeholder="00" class="w-full text-white text-[12px] text-center font-bold">분
-            </div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-3">
-        <div class="flex flex-col">
-            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟢 집결지</label>
-            <div class="input-group bg-white/5 rounded-xl">
-                <input type="text" id="n_meet" placeholder="만남 장소" class="w-full h-[36px] text-white text-[12px] px-4">
-            </div>
-        </div>
-        <div class="flex flex-col">
-            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🔵 소요시간</label>
-            <div class="input-group duration-box bg-white/5 h-[36px] rounded-xl flex items-center px-3 gap-1 text-[12px] text-gray-400">
-                <span>약</span>
-                <input type="number" id="n_time_h" placeholder="0" inputmode="numeric" class="w-8 bg-transparent text-white text-[12px] font-bold text-center outline-none">
-                <span>시간</span>
-                <input type="number" id="n_time_m" placeholder="00" inputmode="numeric" class="w-8 bg-transparent text-white text-[12px] font-bold text-center outline-none">
-                <span>분</span>
-            </div>
-        </div>
-    </div>
-
-    <div>
-        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚪️ 산행코스 (스페이스 3번 = ' - ')</label>
-        <div class="input-group bg-white/5 rounded-xl">
-            <input type="text" id="n_course" placeholder='코스를 입력하세요' class="w-full h-[36px] text-white text-[12px] px-4">
-        </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-3">
-        <div class="flex flex-col">
-            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟣 거리</label>
-            <div class="input-group flex items-center bg-white/5 rounded-xl pr-4 h-[36px]">
-                <input type="number" id="n_dist" step="0.1" inputmode="decimal" class="w-full text-white text-[12px] text-right px-2 font-bold">
-                <span class="text-[12px] text-gray-600 font-black">km</span>
-            </div>
-        </div>
-        <div class="flex flex-col">
-            <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">🟤 난이도</label>
-            <div class="input-group bg-slate-800 rounded-xl">
-                <select id="n_lv" class="w-full h-[36px] px-3 text-white text-[11px] font-bold">
-                    <option value="하 (쉬움)">하 (쉬움)</option>
-                    <option value="중하 (평범)">중하 (평범)</option>
-                    <option value="중 (약간힘듦)">중 (약간힘듦)</option>
-                    <option value="중상 (힘듦)">중상 (힘듦)</option>
-                    <option value="상 (매우힘듦)">상 (매우힘듦)</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <div>
-        <label class="text-[9px] font-black text-gray-500 ml-1 mb-1 block">⚫️ 준비물</label>
-        <div class="input-group bg-white/5 rounded-xl">
-            <input type="text" id="n_etc" value="물, 간식, 기타" class="w-full h-[36px] text-white text-[12px] px-4">
-        </div>
-    </div>
-</div>
-
-
-            <button id="btn_generate" class="neon-btn w-full h-[56px] mt-0 rounded-2xl flex items-center justify-center gap-2 font-black uppercase tracking-tighter">✨ 일정 생성 & 안전 저장</button>
-
-            <div id="n_result_box" class="hidden mt-6 p-5 bg-[#121422]/70 rounded-3xl border border-emerald-900/40">
+            <div id="n_result_box" class="hidden mt-5 p-5 bg-[#121422]/70 rounded-3xl border border-emerald-900/40">
                 <p class="text-[10px] font-bold text-gray-600 mb-3 uppercase text-center tracking-[0.2em]">Preview Notice</p>
-                <div id="n_final_text" class="text-[11px] text-gray-300 leading-relaxed whitespace-pre-wrap mb-5 bg-black/20 p-4 rounded-xl border border-white/5 font-medium"></div>
-                <button id="btn_copy" class="neon-btn w-full py-4 rounded-2xl text-sm font-black flex items-center justify-center gap-2 uppercase">📋 Copy Text</button>
+                <div id="n_final_text" class="text-[11px] text-gray-300 leading-relaxed whitespace-pre-wrap mb-4 bg-black/20 p-4 rounded-xl border border-white/5 font-medium"></div>
+                <button id="btn_copy" class="neon-btn w-full py-3.5 rounded-2xl text-sm font-black flex items-center justify-center gap-2 uppercase">📋 Copy Text</button>
             </div>
         </div>
     </div>
 
-    <div id="admin_modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" style="display:none;">
+    <!-- [NEW] 세련된 등록 명산 선택 모달 (우측 초성 인덱스 탭 포함) -->
+    <div id="mt_modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-4" onclick="if(event.target === this) closeMtModal()">
+        <div class="bg-[#161829] w-full max-w-md h-[82vh] sm:h-[75vh] rounded-t-[2.2rem] sm:rounded-[2.2rem] border border-white/10 shadow-2xl flex flex-col overflow-hidden animate-bottom-up">
+            
+            <!-- 모달 헤더 & 검색바 -->
+            <div class="p-5 pb-3 border-b border-white/5 bg-slate-900/60">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">⛰️</span>
+                        <div>
+                            <h4 class="text-white font-black text-sm tracking-tight">등록 명산 불러오기</h4>
+                            <p id="mt_total_count" class="text-[10px] text-emerald-400 font-bold">목록 불러오는 중...</p>
+                        </div>
+                    </div>
+                    <button onclick="closeMtModal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+
+                <!-- 빠른 검색창 -->
+                <div class="relative flex items-center bg-white/5 border border-white/10 focus-within:border-emerald-500/50 rounded-xl h-9 px-3 transition-colors">
+                    <span class="material-symbols-outlined text-gray-500 text-[16px] mr-2">search</span>
+                    <input type="text" id="mt_search_input" placeholder="산 이름 또는 집결지 검색..." class="w-full text-xs text-white placeholder-gray-500">
+                    <button id="btn_clear_search" onclick="clearMtSearch()" class="hidden text-gray-500 hover:text-white">
+                        <span class="material-symbols-outlined text-[15px]">cancel</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 리스트 본문 + 우측 초성 인덱스 탭 -->
+            <div class="relative flex-1 flex overflow-hidden">
+                <!-- 왼쪽 산 목록 스크롤 영역 -->
+                <div id="mt_modal_list" class="flex-1 overflow-y-auto px-4 py-3 pr-11 space-y-4 custom-scrollbar scroll-smooth">
+                    <!-- JS로 동적 렌더링 -->
+                </div>
+
+                <!-- 우측 초성 인덱스 탭 바 -->
+                <div id="mt_chosung_bar" class="absolute right-1.5 top-2 bottom-2 w-7 bg-slate-900/90 backdrop-blur-md border border-white/10 rounded-full py-2 flex flex-col items-center justify-between z-10 shadow-lg select-none">
+                    <!-- JS로 초성 탭 렌더링 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 관리자 모달 -->
+    <div id="admin_modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" style="display:none;">
         <div class="bg-[#1a1c2e] w-full max-w-md rounded-[2.5rem] border border-white/10 p-6">
             <div id="auth_view">
                 <h4 class="text-white font-black mb-4 uppercase text-center tracking-widest text-sm">Admin Access</h4>
@@ -190,488 +240,590 @@
         </div>
     </div>
 
-     <script type="module">
-
+    <script type="module">
         // 1. 운동 타입 선택 시 색상 테마 변경 함수
-window.updateTypeUI = () => {
-    const type = document.querySelector('input[name="activity_type"]:checked').value;
-    const mainCard = document.getElementById('main_card');
-    
-    // 기존 색상 클래스 다 지우기
-    mainCard.classList.remove('type-hike', 'type-run', 'type-track', 'type-walk');
+        window.updateTypeUI = () => {
+            const type = document.querySelector('input[name="activity_type"]:checked').value;
+            const mainCard = document.getElementById('main_card');
+            mainCard.classList.remove('type-hike', 'type-run', 'type-track', 'type-walk');
 
-    // 선택한 타입에 맞는 클래스 넣기
-    if (type === '산행') mainCard.classList.add('type-hike');
-    else if (type === '런닝') mainCard.classList.add('type-run');
-    else if (type === '트래킹') mainCard.classList.add('type-track');
-    else if (type === '산책') mainCard.classList.add('type-walk');
-    
-    checkAllInputs(); // 색상 바뀔 때 테두리 즉시 업데이트
-};
-
-// 2. 입력창에 글자가 있는지 체크해서 테두리 켜주는 함수
-const checkAllInputs = () => {
-    const groups = document.querySelectorAll('.input-group');
-    groups.forEach(group => {
-        const inputs = group.querySelectorAll('input, select');
-        let hasValue = false;
-        
-        inputs.forEach(i => {
-            // 값이 비어있지 않거나 0이 아니면 '입력됨'으로 간주
-            if (i.value && i.value.trim() !== "" && i.value !== "0") hasValue = true;
-        });
-
-        if (hasValue) group.classList.add('has-value');
-        else group.classList.remove('has-value');
-    });
-};
-
-// 3. 페이지가 열릴 때 감시 시작
-document.addEventListener('DOMContentLoaded', () => {
-    // 모든 input에 입력할 때마다 체크하도록 이벤트 연결
-    document.querySelectorAll('input, select').forEach(el => {
-        el.addEventListener('input', checkAllInputs);
-    });
-    updateTypeUI(); // 첫 화면 세팅
-});
-
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getFirestore, doc, getDoc, getDocs, setDoc, deleteDoc, collection, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBoAh3V3WrHg_wo53g1LHM0UW3-y6w2deg",
-        authDomain: "san-woori-db.firebaseapp.com",
-        projectId: "san-woori-db",
-        storageBucket: "san-woori-db.firebasestorage.app",
-        messagingSenderId: "387585514110",
-        appId: "1:387585514110:web:44749e6d92769fff6ad62f"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // [1] 데이터 상태 및 기초 함수
-    let cachedMountains = [];
-    const getFavorites = () => JSON.parse(localStorage.getItem('my_favorites') || '[]');
-
-    const fillFields = (d) => {
-    // 1. 운동 타입 버튼 자동 선택 (런닝, 트래킹, 산책 등)
-    if (d.type) {
-        const typeRadios = document.getElementsByName('activity_type');
-        typeRadios.forEach(radio => {
-            if (radio.value === d.type) {
-                radio.checked = true;
-            }
-        });
-    } else {
-        // 타입 정보가 없는 일반 산들은 기본 '산행' 체크
-        document.getElementById('type_hike').checked = true;
-    }
-
-    // 2. 나머지 필드 채우기 (기존 유지)
-    document.getElementById('n_meet').value = d.meet || '';
-    document.getElementById('n_time_h').value = d.time_h || '';
-    document.getElementById('n_time_m').value = d.time_m || '';
-    document.getElementById('n_course').value = d.course || '';
-    document.getElementById('n_dist').value = d.dist || '';
-    document.getElementById('n_lv').value = d.lv || '하 (쉬움)';
-};
-
-
-    // [2] 리스트 렌더링 (즐겨찾기 포함)
-    const renderSelectOptions = () => {
-        const select = document.getElementById('official_mt_select');
-        if (!select) return;
-
-        const favs = getFavorites(); 
-        const favoriteItems = cachedMountains.filter(m => favs.includes(m.id));
-        const normalItems = cachedMountains.filter(m => !favs.includes(m.id));
-
-        select.innerHTML = '<option value="">⛰️등록 명산</option>';
-
-        if (favoriteItems.length > 0) {
-            const groupLabel = document.createElement('option');
-            groupLabel.textContent = "--- 즐겨찾기 ⭐ ---";
-            groupLabel.disabled = true;
-            select.appendChild(groupLabel);
-
-            favoriteItems.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.id;
-                opt.innerText = `⭐ ${m.id}`;
-                select.appendChild(opt);
-            });
-
-            const line = document.createElement('option');
-            line.textContent = "------------------";
-            line.disabled = true;
-            select.appendChild(line);
-        }
-
-        normalItems.forEach(m => {
-            if(m.type === 'official' && m.meet && m.meet !== "추후 공지") {
-                const opt = document.createElement('option');
-                opt.value = m.id;
-                opt.innerText = m.id;
-                select.appendChild(opt);
-            }
-        });
-    };
-
-    // [3] 데이터 동기화
-    const syncMountains = async () => {
-        try {
-            const cachedData = localStorage.getItem('mt_cache');
-            if (cachedData) {
-                cachedMountains = JSON.parse(cachedData);
-                renderSelectOptions();
-            }
-
-            const [officialSnap, draftSnap] = await Promise.all([
-                getDocs(collection(db, "mountains")),
-                getDocs(collection(db, "mountain_drafts"))
-            ]);
-
-            const officialList = officialSnap.docs.map(d => ({ id: d.id, ...d.data(), type: 'official' }));
-            // 기존 코드를 이렇게 교체하세요
-const draftList = draftSnap.docs.map(d => {
-    const data = d.data();
-    return { 
-        id: d.id, 
-        ...data, 
-        // DB에 저장된 타입이 있으면 쓰고, 없으면 기본 'draft' (또는 '산행')
-        type: data.type || '산행' 
-    };
-});
-
-            const combined = [...officialList];
-            draftList.forEach(d => { if (!combined.find(c => c.id === d.id)) combined.push(d); });
-
-            combined.sort((a, b) => {
-                const getPriority = (id) => {
-                    if (id.includes("종주")) return 2;
-                    if (id.includes("연계")) return 1;
-                    return 0;
-                };
-                const priorityA = getPriority(a.id);
-                const priorityB = getPriority(b.id);
-                if (priorityA !== priorityB) return priorityA - priorityB;
-                return a.id.localeCompare(b.id, 'ko');
-            });
-
-            cachedMountains = combined;
-            localStorage.setItem('mt_cache', JSON.stringify(combined));
-            renderSelectOptions();
-        } catch (e) { console.error("Sync Error:", e); }
-    };
-
-           // [4] 입력 제어 및 이벤트 초기화
-const initInputs = () => {
-    const allInputIds = ['n_mt', 'n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m', 'n_etc'];
-    allInputIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.setAttribute('autocomplete', 'off');
-        el.setAttribute('spellcheck', 'false');
-
-        if (id !== 'n_mt' && id !== 'n_etc') {
-            el.addEventListener('focus', function() {
-                if (this.value !== "") setTimeout(() => { this.select(); }, 10);
-            });
-        }
-    });
-
-    // 산 선택 셀렉트박스 변경 시
-    document.getElementById('official_mt_select').onchange = (e) => {
-        const mtName = e.target.value;
-        if (!mtName) return;
-        document.getElementById('n_mt').value = mtName;
-        const found = cachedMountains.find(m => m.id === mtName);
-        if (found) fillFields(found);
-        document.getElementById('n_mt').blur();
-    };
-
-    // 산 이름 입력 시 자동 완성 로직
-    document.getElementById('n_mt').addEventListener('input', (e) => {
-        const inputVal = e.target.value.trim();
-        if (!inputVal) return; 
-
-        const found = cachedMountains.find(m => m.id === inputVal);
-        if (found) {
-            fillFields(found);
-        }
-        updateFavIcon();
-    });
-
-    // [수정된 부분] 코스 입력 시 하이픈 자동 변환 logic
-    document.getElementById('n_course').oninput = (e) => {
-        const el = e.target;
-        // 스페이스바가 두 번 연속('  ') 들어올 때만 ' - '으로 변경합니다.
-        // 이렇게 하면 단어 사이의 일반적인 공백 한 칸은 허용됩니다.
-        if (el.value.includes('  ')) {
-            el.value = el.value.replace(/  /g, ' - ');
-        }
-    };
-};
-
-
-    // [5] 전역 함수 (Window 객체 등록)
-    window.toggleFavorite = (mtName, event) => {
-        if(event) event.stopPropagation();
-        let favs = getFavorites();
-        favs = favs.includes(mtName) ? favs.filter(id => id !== mtName) : [...favs, mtName];
-        localStorage.setItem('my_favorites', JSON.stringify(favs));
-        renderSelectOptions(); 
-    };
-
-    window.openAdminAuth = () => { document.getElementById('admin_modal').style.display = 'flex'; };
-    window.closeAdminModal = () => { document.getElementById('admin_modal').style.display = 'none'; };
-
-    // [6] 버튼 동작 로직
-    
-    document.getElementById('btn_generate').onclick = async () => {
-    // 1. 선택된 타입 및 해당 타입에 따른 명칭 설정
-    const type = document.querySelector('input[name="activity_type"]:checked').value;
-    
-    // 타입별 명칭 및 안전 문구 매핑
-    const typeLabels = {
-        "산행": { spot: "산행지", course: "산행코스", safetyWord: "산행" },
-        "런닝": { spot: "주로", course: "런닝코스", safetyWord: "런닝" },
-        "트래킹": { spot: "탐방로", course: "탐방코스", safetyWord: "트레킹" },
-        "산책": { spot: "산책로", course: "산책코스", safetyWord: "산책" }
-    };
-    
-    const labels = typeLabels[type] || typeLabels["산행"];
-
-    const mt = document.getElementById('n_mt').value.trim() || '미정';
-    const pickupOpt = document.querySelector('input[name="n_pickup"]:checked');
-    let pTag = pickupOpt ? ` ${pickupOpt.value}` : "";
-    let pNotice = (pickupOpt && pickupOpt.id === 'p_ok') ? `\n💢일자, 시간, 장소 조율 가능합니다\n 차량 픽업 관련 문의 서브방에 입장해주세요` : "";
-    
-    const m = document.getElementById('n_month').value; 
-    const d = document.getElementById('n_day').value;
-    const ampm = document.getElementById('n_ampm').value; 
-    const h = document.getElementById('n_hour').value;
-    const min = document.getElementById('n_min').value || "00";
-    const meet = document.getElementById('n_meet').value || '추후 공지';
-    const th = document.getElementById('n_time_h').value; 
-    const tm = document.getElementById('n_time_m').value;
-    
-    let dur = "미정";
-    if (th || tm) {
-        const hourPart = th ? `${th}시간` : "";
-        const minPart = tm ? ` ${tm}분` : "";
-        dur = `약 ${hourPart}${minPart}`.trim();
-    }
-    
-    const course = document.getElementById('n_course').value || '미정';
-    const dist = document.getElementById('n_dist').value ? `${document.getElementById('n_dist').value}km` : '미정';
-    const lv = document.getElementById('n_lv').value; 
-    const etc = document.getElementById('n_etc').value;
-
-    // 동적으로 변경되는 안전 주의사항 문구
-    const safety = `💢${labels.safetyWord}시 일어나는 모든 사건 사고는 본인의 \n 책임이므로 안전에 유의하여 ${labels.safetyWord}하세요\n💢우천, 강풍 등 기상 악화 시 안전을 위해서 \n 모임이 취소될 수 있습니다\n💢참석자 유무 상황에 따라 시간 변경 및 \n 일정 취소될 수 있습니다`;
-
-    // 공지 템플릿 생성
-    const template = `[산:우리 ${type} 공지]\n🔴${labels.spot}: ${mt}${pTag}\n🟠일시: ${m}월 ${d}일 ${ampm} ${h}시 ${min}분\n🟡집결지: ${meet}\n🟢소요시간: ${dur}\n🔵${labels.course}: ${course}\n⚪️거리: ${dist}\n🟣난이도: ${lv}\n🟤준비물: ${etc}\n\n${safety}${pNotice}`;
-
-    // 화면 업데이트 및 스크롤
-    document.getElementById('n_final_text').innerText = template;
-    const resultBox = document.getElementById('n_result_box');
-    resultBox.classList.remove('hidden');
-
-    setTimeout(() => {
-        resultBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, 100);
-
-    // ✨ [추가됨] 클립보드 자동 복사 기능
-    try {
-        await navigator.clipboard.writeText(template);
-        const btnGen = document.getElementById('btn_generate');
-        const originalGenText = btnGen.innerText;
-        btnGen.innerText = "✨ 일정 생성 완료 & 복사됨! ✨";
-        setTimeout(() => { btnGen.innerText = originalGenText; }, 1500);
-    } catch (err) {
-        console.error("클립보드 자동 복사 실패:", err);
-    }
-
-    // DB 저장
-    if(mt !== '미정') {
-        await setDoc(doc(db, "mountain_drafts", mt), {
-            type: type,
-            meet, 
-            time_h: th, 
-            time_m: tm, 
-            course, 
-            dist: document.getElementById('n_dist').value, 
-            lv, 
-            updatedAt: serverTimestamp()
-        }, { merge: true });
-        
-        await syncMountains(); 
-    }
-};
-
-    
-
-         
-    document.getElementById('btn_copy').onclick = () => {
-        const finalText = document.getElementById('n_final_text').innerText;
-        navigator.clipboard.writeText(finalText).then(() => {
-            const btn = document.getElementById('btn_copy');
-            const original = btn.innerText;
-            btn.innerText = "✅ Copied!";
-            setTimeout(() => { btn.innerText = original; }, 1500);
-        });
-    };
-
-    // [7] 관리자 기능
-    document.getElementById('btn_auth_submit').onclick = async () => {
-        const pw = document.getElementById('admin_input_pw').value;
-        const config = await getDoc(doc(db, "admin_settings", "config"));
-        if (config.exists() && config.data().admin_pw === pw) {
-            document.getElementById('auth_view').classList.add('hidden');
-            document.getElementById('draft_view').classList.remove('hidden');
-            loadDrafts();
-        } else { alert("관리자 암호가 틀립니다."); }
-    };
-
-    const loadDrafts = async () => {
-    const list_el = document.getElementById('draft_list');
-    const snap = await getDocs(collection(db, "mountain_drafts"));
-    list_el.innerHTML = snap.empty ? '<p class="text-center py-10 text-gray-600 text-[10px]">등록된 정보가 없습니다.</p>' : "";
-    
-    snap.forEach(d => {
-        const data = d.data();
-        const type = data.type || "산행"; // 타입이 없으면 기본 산행
-        
-        // 타입별 색상 설정
-        const colors = {
-            "산행": "border-emerald-500/30 text-emerald-400 bg-emerald-500/5",
-            "런닝": "border-pink-500/30 text-pink-400 bg-pink-500/5",
-            "트래킹": "border-purple-500/30 text-purple-400 bg-purple-500/5",
-            "산책": "border-orange-500/30 text-orange-400 bg-orange-500/5"
+            if (type === '산행') mainCard.classList.add('type-hike');
+            else if (type === '런닝') mainCard.classList.add('type-run');
+            else if (type === '트래킹') mainCard.classList.add('type-track');
+            else if (type === '산책') mainCard.classList.add('type-walk');
+            
+            checkAllInputs();
         };
-        const colorClass = colors[type] || colors["산행"];
 
-        const div = document.createElement('div');
-        div.className = `p-3 rounded-2xl flex justify-between items-center mb-2 border ${colorClass}`;
-        
-        div.innerHTML = `
-            <div class="flex-1">
-                <div class="flex items-center gap-2">
-                    <span class="text-[8px] px-1.5 py-0.5 rounded-md border border-current font-black uppercase">${type}</span>
-                    <p class="text-xs font-bold text-white">${d.id}</p>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                ${type === '산행' ? `<button onclick="approveMt('${d.id}')" class="bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">승인</button>` : ''}
-                <button onclick="deleteDraft('${d.id}')" class="bg-red-600/20 text-red-400 border border-red-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">삭제</button>
-            </div>`;
-        list_el.appendChild(div);
-    });
-};
+        // 2. 입력창에 글자가 있는지 체크해서 테두리 켜주는 함수
+        const checkAllInputs = () => {
+            const groups = document.querySelectorAll('.input-group');
+            groups.forEach(group => {
+                const inputs = group.querySelectorAll('input, select');
+                let hasValue = false;
+                inputs.forEach(i => {
+                    if (i.value && i.value.trim() !== "" && i.value !== "0") hasValue = true;
+                });
+                if (hasValue) group.classList.add('has-value');
+                else group.classList.remove('has-value');
+            });
+        };
 
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input, select').forEach(el => {
+                el.addEventListener('input', checkAllInputs);
+            });
+            updateTypeUI();
+        });
 
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, getDocs, setDoc, deleteDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-    window.approveMt = async (id) => {
-        if(!confirm(`'${id}' 정보를 공식 DB에 반영할까요?`)) return;
-        const snap = await getDoc(doc(db, "mountain_drafts", id));
-        if(snap.exists()) {
-            await setDoc(doc(db, "mountains", id), { ...snap.data(), isOfficial: true, updatedAt: serverTimestamp() }, { merge: true });
-            await deleteDoc(doc(db, "mountain_drafts", id));
-            localStorage.removeItem('mt_cache');
-            await syncMountains(); 
-            loadDrafts();
-        }
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoAh3V3WrHg_wo53g1LHM0UW3-y6w2deg",
+            authDomain: "san-woori-db.firebaseapp.com",
+            projectId: "san-woori-db",
+            storageBucket: "san-woori-db.firebasestorage.app",
+            messagingSenderId: "387585514110",
+            appId: "1:387585514110:web:44749e6d92769fff6ad62f"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-    window.deleteDraft = async (id) => {
-        if(confirm(`삭제하시겠습니까?`)) { 
-            await deleteDoc(doc(db, "mountain_drafts", id)); 
-            await syncMountains();
-            loadDrafts(); 
-        }
-    };
+        // [1] 데이터 상태 및 기초 함수
+        let cachedMountains = [];
+        let activeChosung = null;
+        const getFavorites = () => JSON.parse(localStorage.getItem('my_favorites') || '[]');
 
-    // 별 아이콘 상태 업데이트
-    const updateFavIcon = () => {
-        const mtName = document.getElementById('n_mt').value.trim();
-        const icon = document.getElementById('fav_icon');
-        const favs = getFavorites();
-        if (mtName && mtName !== '미정' && favs.includes(mtName)) {
-            icon.style.color = "#fbbf24"; 
-            icon.style.fontVariationSettings = "'FILL' 1, 'wght' 400";
-        } else {
-            icon.style.color = "#6b7280";
-            icon.style.fontVariationSettings = "'FILL' 0, 'wght' 400";
-        }
-    };
+        // 한글 초성 추출 유틸 (쌍자음은 기본 자음 탭으로 통합)
+        const CHOSUNG_LIST = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+        const CHOSUNG_NORMALIZE = { 'ㄲ': 'ㄱ', 'ㄸ': 'ㄷ', 'ㅃ': 'ㅂ', 'ㅆ': 'ㅅ', 'ㅉ': 'ㅈ' };
+        const INDEX_TABS = ['⭐', 'ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ', '기타'];
 
-    // 오전/오후 토글
-    const setupAMPM = () => {
-        const ampmBtn = document.getElementById('btn_ampm_toggle');
-        const ampmTxt = document.getElementById('txt_ampm');
-        const ampmInput = document.getElementById('n_ampm');
-        if (ampmBtn) {
-            ampmBtn.onclick = () => {
-                if (ampmInput.value === "오전") {
-                    ampmInput.value = "오후";
-                    ampmTxt.innerText = "오후";
-                    ampmTxt.style.color = "#fb923c";
-                } else {
-                    ampmInput.value = "오전";
-                    ampmTxt.innerText = "오전";
-                    ampmTxt.style.color = "#ffffff";
+        const getChosung = (str) => {
+            if (!str) return '기타';
+            const clean = str.trim();
+            const code = clean.charCodeAt(0) - 0xAC00;
+            if (code >= 0 && code <= 11171) {
+                const raw = CHOSUNG_LIST[Math.floor(code / 588)];
+                return CHOSUNG_NORMALIZE[raw] || raw;
+            }
+            return '기타';
+        };
+
+        const fillFields = (d) => {
+            if (d.type) {
+                const typeRadios = document.getElementsByName('activity_type');
+                typeRadios.forEach(radio => {
+                    if (radio.value === d.type) radio.checked = true;
+                });
+            } else {
+                document.getElementById('type_hike').checked = true;
+            }
+
+            document.getElementById('n_meet').value = d.meet || '';
+            document.getElementById('n_time_h').value = d.time_h || '';
+            document.getElementById('n_time_m').value = d.time_m || '';
+            document.getElementById('n_course').value = d.course || '';
+            document.getElementById('n_dist').value = d.dist || '';
+            document.getElementById('n_lv').value = d.lv || '하 (쉬움)';
+            updateTypeUI();
+        };
+
+        // [2] 등록 명산 모달 렌더링 (ㄱㄴㄷ 그룹핑 + 우측 인덱스 탭)
+        const renderMountainModal = (filterText = '') => {
+            const listEl = document.getElementById('mt_modal_list');
+            const barEl = document.getElementById('mt_chosung_bar');
+            const countEl = document.getElementById('mt_total_count');
+            if (!listEl || !barEl) return;
+
+            const favs = getFavorites();
+            const keyword = filterText.trim().toLowerCase();
+
+            // 공식 명산 필터링 (기존 로직 유지)
+            let validList = cachedMountains.filter(m => m.type === 'official' && m.meet && m.meet !== "추후 공지");
+            if (keyword) {
+                validList = validList.filter(m =>
+                    m.id.toLowerCase().includes(keyword) ||
+                    (m.meet && m.meet.toLowerCase().includes(keyword)) ||
+                    (m.course && m.course.toLowerCase().includes(keyword))
+                );
+            }
+
+            countEl.innerText = `총 ${validList.length}개 등록됨`;
+
+            const favoriteItems = validList.filter(m => favs.includes(m.id));
+            const grouped = {};
+            INDEX_TABS.forEach(tab => grouped[tab] = []);
+            grouped['⭐'] = favoriteItems;
+
+            validList.forEach(m => {
+                const cho = getChosung(m.id);
+                if (grouped[cho]) grouped[cho].push(m);
+                else grouped['기타'].push(m);
+            });
+
+            // 카드 아이템 HTML 생성 헬퍼
+            const createCardHTML = (m) => {
+                const isFav = favs.includes(m.id);
+                const timeStr = (m.time_h || m.time_m) ? `${m.time_h ? m.time_h + '시간 ' : ''}${m.time_m ? m.time_m + '분' : ''}` : '';
+                const subInfo = [m.meet, m.dist ? `${m.dist}km` : '', timeStr].filter(Boolean).join(' · ');
+                const safeId = m.id.replace(/'/g, "\\'");
+
+                return `
+                    <div onclick="selectMtFromModal('${safeId}')" class="group flex items-center justify-between p-3 rounded-2xl bg-white/[0.03] hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/40 cursor-pointer transition-all active:scale-[0.98]">
+                        <div class="min-w-0 flex-1 pr-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-white font-bold text-[13px] group-hover:text-emerald-300 transition-colors truncate">${m.id}</span>
+                                ${m.lv ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-gray-400 font-bold shrink-0">${m.lv.split(' ')[0]}</span>` : ''}
+                            </div>
+                            ${subInfo ? `<p class="text-[10px] text-gray-500 mt-0.5 truncate">${subInfo}</p>` : ''}
+                        </div>
+                        <button type="button" onclick="toggleFavInModal('${safeId}', event)" class="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors shrink-0">
+                            <span class="material-symbols-outlined text-[19px]" style="color: ${isFav ? '#fbbf24' : '#4b5563'}; font-variation-settings: 'FILL' ${isFav ? 1 : 0}, 'wght' 400;">star</span>
+                        </button>
+                    </div>
+                `;
+            };
+
+            // 1) 좌측 리스트 렌더링
+            let listHTML = '';
+            INDEX_TABS.forEach(tab => {
+                const items = grouped[tab];
+                if (!items || items.length === 0) return;
+
+                const headerTitle = tab === '⭐' ? '⭐ 즐겨찾기 명산' : `${tab}`;
+                const badgeColor = tab === '⭐' ? 'text-amber-400 border-amber-500/30 bg-amber-500/10' : 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10';
+
+                listHTML += `
+                    <div id="sec_cho_${tab}" class="scroll-mt-2">
+                        <div class="sticky top-0 z-[5] py-1 mb-1.5 bg-[#161829]/95 backdrop-blur-sm flex items-center gap-2">
+                            <span class="text-[10px] font-black px-2 py-0.5 rounded-md border ${badgeColor}">${headerTitle}</span>
+                            <div class="h-[1px] flex-1 bg-white/5"></div>
+                            <span class="text-[9px] text-gray-600 font-bold">${items.length}</span>
+                        </div>
+                        <div class="space-y-1.5">
+                            ${items.map(createCardHTML).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (!listHTML) {
+                listHTML = `<div class="py-16 text-center text-gray-500 text-xs">검색된 명산이 없습니다.</div>`;
+            }
+            listEl.innerHTML = listHTML;
+
+            // 2) 우측 초성 인덱스 탭 렌더링
+            barEl.innerHTML = INDEX_TABS.map(tab => {
+                const hasItems = grouped[tab] && grouped[tab].length > 0;
+                const isActive = activeChosung === tab;
+                const label = tab === '기타' ? '#' : tab;
+
+                if (!hasItems) {
+                    return `<span class="w-5 h-5 flex items-center justify-center text-[9px] font-bold text-gray-700 cursor-default">${label}</span>`;
+                }
+
+                return `
+                    <button type="button" data-cho="${tab}" onclick="jumpToChosung('${tab}')"
+                        class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black transition-all
+                        ${isActive ? 'bg-emerald-500 text-slate-950 scale-110 shadow-sm' : 'text-gray-300 hover:bg-white/15 hover:text-emerald-300'}">
+                        ${label}
+                    </button>
+                `;
+            }).join('');
+        };
+
+        // 우측 초성 탭 클릭/터치 시 부드러운 스크롤 이동
+        window.jumpToChosung = (tab) => {
+            const target = document.getElementById(`sec_cho_${tab}`);
+            const container = document.getElementById('mt_modal_list');
+            if (target && container) {
+                activeChosung = tab;
+                container.scrollTo({ top: target.offsetTop - 8, behavior: 'smooth' });
+                // 버튼 활성 하이라이트 갱신
+                document.querySelectorAll('#mt_chosung_bar button').forEach(btn => {
+                    if (btn.dataset.cho === tab) {
+                        btn.className = 'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black transition-all bg-emerald-500 text-slate-950 scale-110 shadow-sm';
+                    } else {
+                        btn.className = 'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black transition-all text-gray-300 hover:bg-white/15 hover:text-emerald-300';
+                    }
+                });
+            }
+        };
+
+        // 우측 초성 바에서 손가락/마우스로 드래그(슬라이드) 이동 지원
+        const setupChosungTouchSlide = () => {
+            const bar = document.getElementById('mt_chosung_bar');
+            if (!bar) return;
+            const handleSlide = (clientY) => {
+                const el = document.elementFromPoint(bar.getBoundingClientRect().left + 12, clientY);
+                if (el && el.dataset && el.dataset.cho) {
+                    jumpToChosung(el.dataset.cho);
                 }
             };
-        }
-    };
+            bar.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                handleSlide(e.touches[0].clientY);
+            }, { passive: false });
+        };
 
-    // 자동 포커스 이동 (통합 버전)
-    const setupAutoTab = () => {
-        const config = [
-            { curr: 'n_month', next: 'n_day', wait: ['1', '10', '11', '12'], key: 'm' },
-            { curr: 'n_hour', next: 'n_min', wait: ['1', '10', '11', '12'], key: 'h' },
-            { curr: 'n_time_h', next: 'n_time_m', wait: ['1'], key: 'th' }
-        ];
-        const timers = {};
+        window.openMtModal = () => {
+            const modal = document.getElementById('mt_modal');
+            const searchInput = document.getElementById('mt_search_input');
+            activeChosung = null;
+            searchInput.value = '';
+            document.getElementById('btn_clear_search').classList.add('hidden');
+            renderMountainModal('');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
 
-        config.forEach(item => {
-            const cEl = document.getElementById(item.curr);
-            const nEl = document.getElementById(item.next);
-            if(!cEl || !nEl) return;
+        window.closeMtModal = () => {
+            const modal = document.getElementById('mt_modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
 
-            cEl.addEventListener('input', (e) => {
-                const val = e.target.value;
-                if(!val) return;
-                clearTimeout(timers[item.key]);
+        window.clearMtSearch = () => {
+            const input = document.getElementById('mt_search_input');
+            input.value = '';
+            document.getElementById('btn_clear_search').classList.add('hidden');
+            renderMountainModal('');
+            input.focus();
+        };
 
-                const isWait = item.wait.includes(val) || (item.curr === 'n_time_h' && parseInt(val) >= 10);
-                if (isWait) {
-                    timers[item.key] = setTimeout(() => { if(cEl.value === val) nEl.focus(); }, 2000);
-                } else if (parseInt(val) >= 2 && parseInt(val) <= 9) {
-                    nEl.focus();
+        window.selectMtFromModal = (mtName) => {
+            document.getElementById('n_mt').value = mtName;
+            const found = cachedMountains.find(m => m.id === mtName);
+            if (found) fillFields(found);
+            updateFavIcon();
+            closeMtModal();
+        };
+
+        window.toggleFavInModal = (mtName, event) => {
+            if (event) event.stopPropagation();
+            window.toggleFavorite(mtName);
+            updateFavIcon();
+            renderMountainModal(document.getElementById('mt_search_input').value);
+        };
+
+        // [3] 데이터 동기화
+        const syncMountains = async () => {
+            try {
+                const cachedData = localStorage.getItem('mt_cache');
+                if (cachedData) {
+                    cachedMountains = JSON.parse(cachedData);
+                }
+
+                const [officialSnap, draftSnap] = await Promise.all([
+                    getDocs(collection(db, "mountains")),
+                    getDocs(collection(db, "mountain_drafts"))
+                ]);
+
+                const officialList = officialSnap.docs.map(d => ({ id: d.id, ...d.data(), type: 'official' }));
+                const draftList = draftSnap.docs.map(d => {
+                    const data = d.data();
+                    return { id: d.id, ...data, type: data.type || '산행' };
+                });
+
+                const combined = [...officialList];
+                draftList.forEach(d => { if (!combined.find(c => c.id === d.id)) combined.push(d); });
+
+                // ㄱ~ㅎ -> 연계 -> 종주 정렬 유지
+                combined.sort((a, b) => {
+                    const getPriority = (id) => {
+                        if (id.includes("종주")) return 2;
+                        if (id.includes("연계")) return 1;
+                        return 0;
+                    };
+                    const priorityA = getPriority(a.id);
+                    const priorityB = getPriority(b.id);
+                    if (priorityA !== priorityB) return priorityA - priorityB;
+                    return a.id.localeCompare(b.id, 'ko');
+                });
+
+                cachedMountains = combined;
+                localStorage.setItem('mt_cache', JSON.stringify(combined));
+            } catch (e) { console.error("Sync Error:", e); }
+        };
+
+        // [4] 입력 제어 및 이벤트 초기화
+        const initInputs = () => {
+            const allInputIds = ['n_mt', 'n_meet', 'n_course', 'n_dist', 'n_time_h', 'n_time_m', 'n_etc'];
+            allInputIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.setAttribute('autocomplete', 'off');
+                el.setAttribute('spellcheck', 'false');
+
+                if (id !== 'n_mt' && id !== 'n_etc') {
+                    el.addEventListener('focus', function() {
+                        if (this.value !== "") setTimeout(() => { this.select(); }, 10);
+                    });
                 }
             });
-        });
-    };
 
-    // [8] 초기 실행
-    initInputs();
-    syncMountains();
-    setupAMPM();
-    setupAutoTab();
+            // 모달 내 검색창 이벤트
+            const searchInput = document.getElementById('mt_search_input');
+            const clearBtn = document.getElementById('btn_clear_search');
+            searchInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                if (val) clearBtn.classList.remove('hidden');
+                else clearBtn.classList.add('hidden');
+                renderMountainModal(val);
+            });
 
-    document.getElementById('btn_fav_toggle').onclick = () => {
-        const mtName = document.getElementById('n_mt').value.trim();
-        if (!mtName || mtName === '미정') return;
-        window.toggleFavorite(mtName);
-        updateFavIcon();
-    };
+            // 산 이름 직접 입력 시 자동 완성
+            document.getElementById('n_mt').addEventListener('input', (e) => {
+                const inputVal = e.target.value.trim();
+                if (!inputVal) return; 
+                const found = cachedMountains.find(m => m.id === inputVal);
+                if (found) fillFields(found);
+                updateFavIcon();
+            });
 
-    document.getElementById('official_mt_select').addEventListener('change', () => {
-        setTimeout(updateFavIcon, 100); 
-    });
-</script>
- </body>
+            // 코스 입력 시 하이픈 자동 변환
+            document.getElementById('n_course').oninput = (e) => {
+                const el = e.target;
+                if (el.value.includes('  ')) {
+                    el.value = el.value.replace(/  /g, ' - ');
+                }
+            };
+        };
+
+        // [5] 전역 함수
+        window.toggleFavorite = (mtName, event) => {
+            if(event) event.stopPropagation();
+            let favs = getFavorites();
+            favs = favs.includes(mtName) ? favs.filter(id => id !== mtName) : [...favs, mtName];
+            localStorage.setItem('my_favorites', JSON.stringify(favs));
+        };
+
+        window.openAdminAuth = () => { document.getElementById('admin_modal').style.display = 'flex'; };
+        window.closeAdminModal = () => { document.getElementById('admin_modal').style.display = 'none'; };
+
+        // [6] 일정 생성 & DB 저장
+        document.getElementById('btn_generate').onclick = async () => {
+            const type = document.querySelector('input[name="activity_type"]:checked').value;
+            const typeLabels = {
+                "산행": { spot: "산행지", course: "산행코스", safetyWord: "산행" },
+                "런닝": { spot: "주로", course: "런닝코스", safetyWord: "런닝" },
+                "트래킹": { spot: "탐방로", course: "탐방코스", safetyWord: "트레킹" },
+                "산책": { spot: "산책로", course: "산책코스", safetyWord: "산책" }
+            };
+            const labels = typeLabels[type] || typeLabels["산행"];
+
+            const mt = document.getElementById('n_mt').value.trim() || '미정';
+            const pickupOpt = document.querySelector('input[name="n_pickup"]:checked');
+            let pTag = pickupOpt ? ` ${pickupOpt.value}` : "";
+            let pNotice = (pickupOpt && pickupOpt.id === 'p_ok') ? `\n💢일자, 시간, 장소 조율 가능합니다\n 차량 픽업 관련 문의 서브방에 입장해주세요` : "";
+            
+            const m = document.getElementById('n_month').value; 
+            const d = document.getElementById('n_day').value;
+            const ampm = document.getElementById('n_ampm').value; 
+            const h = document.getElementById('n_hour').value;
+            const min = document.getElementById('n_min').value || "00";
+            const meet = document.getElementById('n_meet').value || '추후 공지';
+            const th = document.getElementById('n_time_h').value; 
+            const tm = document.getElementById('n_time_m').value;
+            
+            let dur = "미정";
+            if (th || tm) {
+                const hourPart = th ? `${th}시간` : "";
+                const minPart = tm ? ` ${tm}분` : "";
+                dur = `약 ${hourPart}${minPart}`.trim();
+            }
+            
+            const course = document.getElementById('n_course').value || '미정';
+            const dist = document.getElementById('n_dist').value ? `${document.getElementById('n_dist').value}km` : '미정';
+            const lv = document.getElementById('n_lv').value; 
+            const etc = document.getElementById('n_etc').value;
+
+            const safety = `💢${labels.safetyWord}시 일어나는 모든 사건 사고는 본인의 \n 책임이므로 안전에 유의하여 ${labels.safetyWord}하세요\n💢우천, 강풍 등 기상 악화 시 안전을 위해서 \n 모임이 취소될 수 있습니다\n💢참석자 유무 상황에 따라 시간 변경 및 \n 일정 취소될 수 있습니다`;
+            const template = `[산:우리 ${type} 공지]\n🔴${labels.spot}: ${mt}${pTag}\n🟠일시: ${m}월 ${d}일 ${ampm} ${h}시 ${min}분\n🟡집결지: ${meet}\n🟢소요시간: ${dur}\n🔵${labels.course}: ${course}\n⚪️거리: ${dist}\n🟣난이도: ${lv}\n🟤준비물: ${etc}\n\n${safety}${pNotice}`;
+
+            document.getElementById('n_final_text').innerText = template;
+            const resultBox = document.getElementById('n_result_box');
+            resultBox.classList.remove('hidden');
+
+            setTimeout(() => {
+                resultBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 100);
+
+            try {
+                await navigator.clipboard.writeText(template);
+                const btnGen = document.getElementById('btn_generate');
+                const originalGenText = btnGen.innerText;
+                btnGen.innerText = "✨ 일정 생성 완료 & 복사됨! ✨";
+                setTimeout(() => { btnGen.innerText = originalGenText; }, 1500);
+            } catch (err) {
+                console.error("클립보드 자동 복사 실패:", err);
+            }
+
+            if(mt !== '미정') {
+                await setDoc(doc(db, "mountain_drafts", mt), {
+                    type: type,
+                    meet, 
+                    time_h: th, 
+                    time_m: tm, 
+                    course, 
+                    dist: document.getElementById('n_dist').value, 
+                    lv, 
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+                
+                await syncMountains(); 
+            }
+        };
+
+        document.getElementById('btn_copy').onclick = () => {
+            const finalText = document.getElementById('n_final_text').innerText;
+            navigator.clipboard.writeText(finalText).then(() => {
+                const btn = document.getElementById('btn_copy');
+                const original = btn.innerText;
+                btn.innerText = "✅ Copied!";
+                setTimeout(() => { btn.innerText = original; }, 1500);
+            });
+        };
+
+        // [7] 관리자 기능
+        document.getElementById('btn_auth_submit').onclick = async () => {
+            const pw = document.getElementById('admin_input_pw').value;
+            const config = await getDoc(doc(db, "admin_settings", "config"));
+            if (config.exists() && config.data().admin_pw === pw) {
+                document.getElementById('auth_view').classList.add('hidden');
+                document.getElementById('draft_view').classList.remove('hidden');
+                loadDrafts();
+            } else { alert("관리자 암호가 틀립니다."); }
+        };
+
+        const loadDrafts = async () => {
+            const list_el = document.getElementById('draft_list');
+            const snap = await getDocs(collection(db, "mountain_drafts"));
+            list_el.innerHTML = snap.empty ? '<p class="text-center py-10 text-gray-600 text-[10px]">등록된 정보가 없습니다.</p>' : "";
+            
+            snap.forEach(d => {
+                const data = d.data();
+                const type = data.type || "산행";
+                const colors = {
+                    "산행": "border-emerald-500/30 text-emerald-400 bg-emerald-500/5",
+                    "런닝": "border-pink-500/30 text-pink-400 bg-pink-500/5",
+                    "트래킹": "border-purple-500/30 text-purple-400 bg-purple-500/5",
+                    "산책": "border-orange-500/30 text-orange-400 bg-orange-500/5"
+                };
+                const colorClass = colors[type] || colors["산행"];
+
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-2xl flex justify-between items-center mb-2 border ${colorClass}`;
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[8px] px-1.5 py-0.5 rounded-md border border-current font-black uppercase">${type}</span>
+                            <p class="text-xs font-bold text-white">${d.id}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        ${type === '산행' ? `<button onclick="approveMt('${d.id}')" class="bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">승인</button>` : ''}
+                        <button onclick="deleteDraft('${d.id}')" class="bg-red-600/20 text-red-400 border border-red-600/30 px-3 py-1.5 rounded-lg text-[10px] font-black">삭제</button>
+                    </div>`;
+                list_el.appendChild(div);
+            });
+        };
+
+        window.approveMt = async (id) => {
+            if(!confirm(`'${id}' 정보를 공식 DB에 반영할까요?`)) return;
+            const snap = await getDoc(doc(db, "mountain_drafts", id));
+            if(snap.exists()) {
+                await setDoc(doc(db, "mountains", id), { ...snap.data(), isOfficial: true, updatedAt: serverTimestamp() }, { merge: true });
+                await deleteDoc(doc(db, "mountain_drafts", id));
+                localStorage.removeItem('mt_cache');
+                await syncMountains(); 
+                loadDrafts();
+            }
+        };
+
+        window.deleteDraft = async (id) => {
+            if(confirm(`삭제하시겠습니까?`)) { 
+                await deleteDoc(doc(db, "mountain_drafts", id)); 
+                await syncMountains();
+                loadDrafts(); 
+            }
+        };
+
+        const updateFavIcon = () => {
+            const mtName = document.getElementById('n_mt').value.trim();
+            const icon = document.getElementById('fav_icon');
+            const favs = getFavorites();
+            if (mtName && mtName !== '미정' && favs.includes(mtName)) {
+                icon.style.color = "#fbbf24"; 
+                icon.style.fontVariationSettings = "'FILL' 1, 'wght' 400";
+            } else {
+                icon.style.color = "#6b7280";
+                icon.style.fontVariationSettings = "'FILL' 0, 'wght' 400";
+            }
+        };
+
+        const setupAMPM = () => {
+            const ampmBtn = document.getElementById('btn_ampm_toggle');
+            const ampmTxt = document.getElementById('txt_ampm');
+            const ampmInput = document.getElementById('n_ampm');
+            if (ampmBtn) {
+                ampmBtn.onclick = () => {
+                    if (ampmInput.value === "오전") {
+                        ampmInput.value = "오후";
+                        ampmTxt.innerText = "오후";
+                        ampmTxt.style.color = "#fb923c";
+                    } else {
+                        ampmInput.value = "오전";
+                        ampmTxt.innerText = "오전";
+                        ampmTxt.style.color = "#ffffff";
+                    }
+                };
+            }
+        };
+
+        const setupAutoTab = () => {
+            const config = [
+                { curr: 'n_month', next: 'n_day', wait: ['1', '10', '11', '12'], key: 'm' },
+                { curr: 'n_hour', next: 'n_min', wait: ['1', '10', '11', '12'], key: 'h' },
+                { curr: 'n_time_h', next: 'n_time_m', wait: ['1'], key: 'th' }
+            ];
+            const timers = {};
+
+            config.forEach(item => {
+                const cEl = document.getElementById(item.curr);
+                const nEl = document.getElementById(item.next);
+                if(!cEl || !nEl) return;
+
+                cEl.addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    if(!val) return;
+                    clearTimeout(timers[item.key]);
+
+                    const isWait = item.wait.includes(val) || (item.curr === 'n_time_h' && parseInt(val) >= 10);
+                    if (isWait) {
+                        timers[item.key] = setTimeout(() => { if(cEl.value === val) nEl.focus(); }, 2000);
+                    } else if (parseInt(val) >= 2 && parseInt(val) <= 9) {
+                        nEl.focus();
+                    }
+                });
+            });
+        };
+
+        // [8] 초기 실행
+        initInputs();
+        syncMountains();
+        setupAMPM();
+        setupAutoTab();
+        setupChosungTouchSlide();
+
+        document.getElementById('btn_fav_toggle').onclick = () => {
+            const mtName = document.getElementById('n_mt').value.trim();
+            if (!mtName || mtName === '미정') return;
+            window.toggleFavorite(mtName);
+            updateFavIcon();
+        };
+    </script>
+</body>
 </html>
